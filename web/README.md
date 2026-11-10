@@ -87,6 +87,33 @@ npm run build         # build de producción (Vite)
 
 ---
 
+## Pruebas automatizadas (Vitest + Testing Library)
+
+Se agregó Vitest con entorno `jsdom`, `@testing-library/react` y `@testing-library/jest-dom` (vía matchers de `vitest`). Tres suites cubren las piezas críticas de la Fase 1:
+
+- **`Header.test.tsx`**: renderiza el nombre del sitio y los 5 enlaces de navegación; abre y cierra el menú móvil con el botón de hamburguesa (y lo cierra al seleccionar un enlace).
+- **`CatalogPreview.test.tsx`**: renderiza el contador de productos de muestra, muestra "Precio por confirmar" en productos sin precio y filtra la carta por marca.
+- **`EventModal.test.tsx`**: valida campos obligatorios (nombre ≥ 2, teléfono ≥ 7 dígitos, email válido, tipo de evento, casilla de privacidad), verifica que no se envíe con errores y que el envío válido llame a `onSubmit` sin incluir el campo `privacy`; y verifica que el botón Cerrar llame a `onClose`.
+
+Comandos (ejecutar desde `web/`):
+
+```bash
+npm run test       # modo vigilante de Vitest
+npm run test:run   # ejecutar pruebas una sola vez (CI)
+```
+
+Para verificar todo junto antes de commitear:
+
+```bash
+npx tsc --noEmit      # tipos (TypeScript)
+npm run lint          # lint (ESLint)
+npm run format:check  # formato (Prettier)
+npm run test:run      # pruebas (Vitest)
+npm run build         # build de producción (Vite)
+```
+
+---
+
 ## Estructura
 
 ```
@@ -111,6 +138,7 @@ web/
 │  │  ├─ site.ts                 # Nombre, ciudad, contacto, estado de pedidos
 │  │  ├─ brands.ts               # Metadatos y logos de cada marca
 │  │  └─ catalog.ts              # Categorías y productos de muestra
+│  │  └─ eventTypes.ts           # Tipos de evento compartidos (Events y EventModal)
 │  ├─ lib/
 │  │  └─ order.ts                # Utilidades de pedido (Fase 2, desactivadas)
 │  ├─ styles/
@@ -118,6 +146,11 @@ web/
 │  │  └─ base.css                # Reset, contenedor, accesibilidad
 │  ├─ types/
 │  │  └─ css-modules.d.ts        # Declaraciones de tipos para CSS Modules
+│  ├─ test/                      # Pruebas automatizadas (Vitest + Testing Library)
+│  │  ├─ setup.ts                # matchMedia stub, cleanup y jest-dom matchers
+│  │  ├─ Header.test.tsx
+│  │  ├─ CatalogPreview.test.tsx
+│  │  └─ EventModal.test.tsx
 │  ├─ App.tsx
 │  └─ main.tsx
 ├─ index.html

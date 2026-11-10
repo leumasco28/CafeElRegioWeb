@@ -209,8 +209,10 @@ Inventario terminado; `Recursos/` intacto. Sin git, sin dependencias, sin ejecut
 - ✅ `tsc --noEmit` y `npm run build` pasan sin errores.
 - ✅ Checkbox de privacidad en `EventModal.tsx` corregido: ahora es controlado y se puede desmarcar.
 - ✅ ESLint + Prettier + husky (completado 2026-11-10): ESLint con flat config en `eslint.config.js` (reglas TS + React Hooks + React Refresh), Prettier (`.prettierrc`: `printWidth: 100`, comillas simples, 2 espacios), Husky con pre-commit ejecutando `lint-staged` sobre `web/`. Scripts: `npm run lint`, `npm run lint:fix`, `npm run format`, `npm run format:check`.
-- ⏳ Vitest + React Testing Library (pendiente).
-- ⏳ Extraer `EVENT_TYPES` a archivo compartido (pendiente).
+- ✅ Vitest + React Testing Library: 3 suites de pruebas (Header, CatalogPreview, EventModal), 10 pruebas pasando. Configuración en `vite.config.js` (environment jsdom, setupFiles `test/setup.ts`) y scripts `npm run test` / `npm run test:run`. Commit `d1045ad`.
+- ✅ Extraer `EVENT_TYPES` a archivo compartido (`src/content/eventTypes.ts`) entre `Events.tsx` y `EventModal.tsx`. Commit `d1045ad`.
+
+Fase 1 al 100% completa. Listo para pasar a la Fase 2 (confirmar precios del catálogo y activar pedidos por WhatsApp).
 
 ### Fase 2 — Catálogo real
 
