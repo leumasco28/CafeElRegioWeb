@@ -1,18 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ChangeEvent, FormEvent, KeyboardEvent } from 'react';
+import { EVENT_TYPE_OPTIONS, EVENT_TYPE_OTRO } from '../../content/eventTypes.ts';
 import styles from './EventModal.module.css';
-
-type EventTypeOption = {
-  value: string;
-  label: string;
-};
-
-const EVENT_TYPES: EventTypeOption[] = [
-  { value: 'feria', label: 'Feria o mercado de emprendimientos' },
-  { value: 'privado', label: 'Evento privado' },
-  { value: 'empresarial', label: 'Evento empresarial o activación de marca' },
-  { value: 'otro', label: 'Otro' },
-];
 
 type FormData = {
   name: string;
@@ -189,7 +178,7 @@ export default function EventModal({ isOpen, onClose, onSubmit }: EventModalProp
           Cuéntanos qué necesitas y nos pondremos en contacto contigo por WhatsApp.
         </p>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <form onSubmit={handleSubmit} className={styles.form} data-testid="event-form">
           <div className={styles.field}>
             <label htmlFor="event-name">
               Nombre completo <span className={styles.required}>*</span>
@@ -260,7 +249,7 @@ export default function EventModal({ isOpen, onClose, onSubmit }: EventModalProp
               aria-describedby="error-event-type"
             >
               <option value="">Selecciona una opción</option>
-              {EVENT_TYPES.map((item) => (
+              {[...EVENT_TYPE_OPTIONS, EVENT_TYPE_OTRO].map((item) => (
                 <option key={item.value} value={item.value}>
                   {item.label}
                 </option>

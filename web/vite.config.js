@@ -8,4 +8,9 @@ export default defineConfig({
     port: 5173,
     open: false,
   },
+  test: {
+    environment: 'jsdom',
+    setupFiles: './test/setup.ts',
+    include: ['test/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
+  },
 });

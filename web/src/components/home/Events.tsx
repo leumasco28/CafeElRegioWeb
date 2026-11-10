@@ -1,31 +1,8 @@
 import { useState } from 'react';
+import { EVENT_TYPE_CARDS } from '../../content/eventTypes.ts';
 import SectionHeading from '../ui/SectionHeading.tsx';
 import EventModal from '../ui/EventModal.tsx';
 import styles from './Events.module.css';
-
-type EventType = {
-  number: string;
-  title: string;
-  text: string;
-};
-
-const EVENT_TYPES: EventType[] = [
-  {
-    number: '01',
-    title: 'Ferias y mercados',
-    text: 'La barra de café se suma a ferias gastronómicas y mercados artesanales.',
-  },
-  {
-    number: '02',
-    title: 'Eventos privados',
-    text: 'Cumpleaños, reuniones y celebraciones con café y repostería para compartir.',
-  },
-  {
-    number: '03',
-    title: 'Empresas y activaciones',
-    text: 'Café para equipos, lanzamientos y jornadas que necesitan una pausa distinta.',
-  },
-];
 
 type EventFormData = {
   name: string;
@@ -65,7 +42,7 @@ export default function Events() {
         </div>
 
         <ul className={styles.grid}>
-          {EVENT_TYPES.map((event) => (
+          {EVENT_TYPE_CARDS.map((event) => (
             <li key={event.number} className={styles.card}>
               <span className={styles.number} aria-hidden="true">
                 {event.number}
