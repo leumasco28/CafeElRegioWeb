@@ -1,0 +1,220 @@
+/* ==========================================================================
+   Canales oficiales de marca (Instagram, WhatsApp, Facebook, enlaces)
+   ========================================================================== */
+
+/* --- Variante tarjeta (sección de marcas) -------------------------------- */
+
+.card {
+  margin-top: var(--space-md);
+  padding-top: var(--space-sm);
+  border-top: 1px solid rgba(74, 35, 100, 0.16);
+}
+
+.cardLabel {
+  color: var(--color-plum-soft);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.cardPrimary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.65rem;
+}
+
+.cardPrimaryLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0.42rem 0.85rem;
+  border: 1px solid rgba(74, 35, 100, 0.3);
+  border-radius: var(--radius-pill);
+  color: var(--color-plum);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: background-color var(--transition), border-color var(--transition),
+    color var(--transition);
+}
+
+.cardPrimaryLink:hover {
+  background: var(--color-plum);
+  border-color: var(--color-plum);
+  color: var(--color-paper);
+}
+
+.cardIcon {
+  width: 16px;
+  height: 16px;
+  margin-right: 0.4rem;
+  flex-shrink: 0;
+}
+
+.cardSecondary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+}
+
+.secondaryItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.cardSecondary a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgba(110, 97, 85, 0.4);
+  text-underline-offset: 3px;
+  transition: color var(--transition), text-decoration-color var(--transition);
+}
+
+.cardSecondary a:hover {
+  color: var(--color-plum);
+  text-decoration-color: currentColor;
+}
+
+.separator {
+  opacity: 0.5;
+}
+
+/* --- Variante panel (portada) -------------------------------------------- */
+
+.panel {
+  color: var(--color-ink);
+}
+
+.panelTitle {
+  padding: 0 0.6rem 0.35rem;
+  color: var(--color-plum-soft);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.panelList {
+  display: grid;
+  gap: 1px;
+}
+
+.panelLink {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 10px;
+  color: var(--color-ink);
+  text-decoration: none;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+.panelLink:hover,
+.panelLink:focus-visible {
+  background: var(--color-blush);
+}
+
+.panelIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--color-plum);
+}
+
+.panelText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.panelName {
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.panelHandle {
+  margin-top: 0.15rem;
+  overflow: hidden;
+  color: var(--color-muted);
+  font-size: var(--text-2xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.panelExternal {
+  width: 14px;
+  height: 14px;
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--color-muted);
+  opacity: 0.55;
+}
+
+.panelLink:hover .panelExternal {
+  opacity: 1;
+}
+
+.panelSecondary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.45rem;
+  padding: 0.5rem 0.6rem 0.15rem;
+  border-top: 1px solid rgba(74, 35, 100, 0.14);
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+}
+
+.panelSecondary a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgba(110, 97, 85, 0.4);
+  text-underline-offset: 3px;
+  transition: color var(--transition), text-decoration-color var(--transition);
+}
+
+.panelSecondary a:hover {
+  color: var(--color-plum);
+  text-decoration-color: currentColor;
+}
+
+/* --- Variante pie de página ---------------------------------------------- */
+
+.footerList {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.footerList a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(247, 241, 226, 0.8);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.footerList a:hover {
+  color: var(--color-cream);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.footerIcon {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: var(--color-tiza-soft);
+  opacity: 0.85;
+}

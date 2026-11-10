@@ -1,0 +1,187 @@
+.footer {
+  background: var(--color-ink);
+  color: var(--color-cream);
+  padding-block: var(--space-2xl) var(--space-lg);
+  border-top: 1px solid var(--color-line-dark);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.35fr 0.6fr 0.95fr 1fr;
+  gap: clamp(2rem, 5vw, 4.5rem);
+  padding-bottom: var(--space-xl);
+}
+
+.brandCol {
+  max-width: 42ch;
+}
+
+.logos {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: var(--space-md);
+}
+
+.regioBadge {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  overflow: hidden;
+  background: var(--color-cream);
+  border-radius: 12px;
+}
+
+.logoRegio {
+  width: 72px;
+  height: 72px;
+  mix-blend-mode: multiply;
+}
+
+.times {
+  color: var(--color-tiza-soft);
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  opacity: 0.75;
+}
+
+.kmBadge {
+  display: grid;
+  place-items: center;
+  width: 78px;
+  height: 78px;
+  overflow: hidden;
+  background: #fffdf6;
+  border-radius: 50%;
+}
+
+.logoKmuffis {
+  width: 70px;
+  height: 70px;
+}
+
+.summary {
+  color: rgba(247, 241, 226, 0.82);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  line-height: var(--leading-snug);
+}
+
+.status {
+  margin-top: var(--space-sm);
+  color: var(--color-tiza-soft);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.colTitle {
+  margin-bottom: var(--space-sm);
+  color: var(--color-tiza-soft);
+  font-family: var(--font-label);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.linkList {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.linkList a {
+  color: rgba(247, 241, 226, 0.8);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.linkList a:hover {
+  color: var(--color-cream);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.contactList {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0;
+}
+
+.contactList dt {
+  color: rgba(247, 241, 226, 0.58);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.contactList dd {
+  margin: 0.1rem 0 0;
+  font-size: var(--text-sm);
+}
+
+.socialList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+
+.socialList a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgba(247, 241, 226, 0.82);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.socialList a:hover {
+  color: var(--color-cream);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.socialIcon {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: var(--color-tiza-soft);
+  opacity: 0.85;
+}
+
+.note {
+  max-width: 34ch;
+  margin-top: var(--space-md);
+  color: rgba(247, 241, 226, 0.6);
+  font-size: var(--text-xs);
+  line-height: 1.55;
+}
+
+.bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-line-dark);
+  color: rgba(247, 241, 226, 0.5);
+  font-size: var(--text-xs);
+}
+
+@media (max-width: 980px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .brandCol {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

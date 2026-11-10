@@ -1,0 +1,109 @@
+.section {
+  background: var(--color-cream);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  margin-top: var(--space-xl);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: clamp(1.4rem, 3.4vw, 2.6rem);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.regio {
+  background:
+    radial-gradient(100% 120% at 100% 0%, #33251c 0%, #211913 58%, #1a1310 100%);
+  border: 1px solid rgba(233, 185, 73, 0.22);
+  color: var(--color-cream);
+}
+
+.kmuffis {
+  background:
+    radial-gradient(110% 120% at 0% 0%, #fffafc 0%, var(--color-blush) 52%, #f3e2e9 100%);
+  border: 1px solid rgba(74, 35, 100, 0.14);
+  color: var(--color-ink);
+}
+
+.logoWrap {
+  width: fit-content;
+  margin-bottom: var(--space-2xs);
+}
+
+.regio .logoWrap {
+  padding: 0.6rem;
+  background: var(--color-cream);
+  border-radius: var(--radius-md);
+}
+
+.logoRegio {
+  width: 108px;
+  mix-blend-mode: multiply;
+}
+
+.logoKmuffis {
+  width: 160px;
+  mix-blend-mode: multiply;
+}
+
+.kind {
+  color: var(--brand-accent);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.regio .kind {
+  color: var(--color-tiza-soft);
+}
+
+.kmuffis .kind {
+  color: var(--color-plum-soft);
+}
+
+.name {
+  font-size: var(--text-2xl);
+}
+
+.text {
+  max-width: 42ch;
+  color: inherit;
+  opacity: 0.84;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: auto;
+  padding-top: var(--space-sm);
+}
+
+.link {
+  align-self: flex-start;
+  margin-top: var(--space-xs);
+  padding-bottom: 2px;
+  border-bottom: 1px solid currentColor;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  text-decoration: none;
+  transition: gap var(--transition), opacity var(--transition);
+}
+
+.link:hover {
+  opacity: 0.75;
+}
+
+@media (max-width: 860px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

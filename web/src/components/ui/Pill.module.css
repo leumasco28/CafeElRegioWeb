@@ -1,0 +1,41 @@
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.34rem 0.72rem;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-label);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.neutral {
+  background: transparent;
+  color: inherit;
+  opacity: 0.86;
+}
+
+.accent {
+  background: var(--color-tiza);
+  border-color: transparent;
+  color: var(--color-ink);
+  opacity: 1;
+}
+
+.muted {
+  background: rgba(28, 21, 17, 0.06);
+  border-color: transparent;
+  color: var(--color-muted);
+  opacity: 1;
+}
+
+.dark {
+  background: var(--color-ink);
+  border-color: transparent;
+  color: var(--color-cream);
+  opacity: 1;
+}
