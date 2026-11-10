@@ -1,1 +1,1 @@
-cd web && npx lint-staged
+npx --prefix web lint-staged
