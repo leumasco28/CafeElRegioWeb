@@ -35,10 +35,11 @@
   --color-warning: #8a5a12;
 
   /* Tipografía */
-  --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino,
-    "Times New Roman", Georgia, serif;
-  --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+  --font-display:
+    'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, 'Times New Roman', Georgia,
+    serif;
+  --font-body:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-label: var(--font-body);
 
   --text-2xs: 0.6875rem;

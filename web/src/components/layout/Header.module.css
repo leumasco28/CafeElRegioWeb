@@ -82,7 +82,9 @@
   text-decoration: none;
   text-transform: uppercase;
   white-space: nowrap;
-  transition: color var(--transition), border-color var(--transition);
+  transition:
+    color var(--transition),
+    border-color var(--transition);
 }
 
 .nav a:hover {
@@ -104,7 +106,9 @@
   border-radius: var(--radius-sm);
   color: var(--color-cream);
   cursor: pointer;
-  transition: border-color var(--transition), background-color var(--transition);
+  transition:
+    border-color var(--transition),
+    background-color var(--transition);
 }
 
 .menuButton:hover {
@@ -123,7 +127,9 @@
   height: 2px;
   background: currentColor;
   border-radius: 2px;
-  transition: transform var(--transition), opacity var(--transition);
+  transition:
+    transform var(--transition),
+    opacity var(--transition);
 }
 
 .menuButton[aria-expanded='true'] .menuIcon span:nth-child(1) {
@@ -165,7 +171,9 @@
     opacity: 0;
     visibility: hidden;
     transform: translateY(-6px);
-    transition: opacity var(--transition), transform var(--transition),
+    transition:
+      opacity var(--transition),
+      transform var(--transition),
       visibility var(--transition);
   }
 

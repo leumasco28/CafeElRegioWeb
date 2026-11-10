@@ -39,11 +39,8 @@ export function formatCOP(value: number | null | undefined): string | null {
   }).format(value);
 }
 
-export function buildOrderMessage({
-  items = [],
-  customer = {},
-  notes = '',
-}: OrderInput = {}): string | null {
+export function buildOrderMessage({ items = [], customer = {}, notes = '' }: OrderInput = {}):
+  string | null {
   if (!PEDIDOS_HABILITADOS) return null;
 
   const lines = [`Pedido ${site.name}`];
@@ -55,7 +52,7 @@ export function buildOrderMessage({
 
   const total = items.reduce(
     (sum, item) => sum + (typeof item.price === 'number' ? item.price * item.quantity : 0),
-    0,
+    0
   );
   const totalLabel = formatCOP(total);
   if (totalLabel) lines.push(`Total: ${totalLabel}`);

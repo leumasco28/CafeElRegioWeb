@@ -11,7 +11,5 @@ type PillProps = {
  * Etiqueta corta. No transmite estado de compra.
  */
 export default function Pill({ children, tone = 'neutral', className = '' }: PillProps) {
-  return (
-    <span className={`${styles.pill} ${styles[tone]} ${className}`.trim()}>{children}</span>
-  );
+  return <span className={`${styles.pill} ${styles[tone]} ${className}`.trim()}>{children}</span>;
 }

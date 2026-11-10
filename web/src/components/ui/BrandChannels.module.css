@@ -37,7 +37,9 @@
   font-weight: 700;
   letter-spacing: 0.02em;
   text-decoration: none;
-  transition: background-color var(--transition), border-color var(--transition),
+  transition:
+    background-color var(--transition),
+    border-color var(--transition),
     color var(--transition);
 }
 
@@ -75,7 +77,9 @@
   text-decoration: underline;
   text-decoration-color: rgba(110, 97, 85, 0.4);
   text-underline-offset: 3px;
-  transition: color var(--transition), text-decoration-color var(--transition);
+  transition:
+    color var(--transition),
+    text-decoration-color var(--transition);
 }
 
 .cardSecondary a:hover {
@@ -115,7 +119,9 @@
   border-radius: 10px;
   color: var(--color-ink);
   text-decoration: none;
-  transition: background-color var(--transition), color var(--transition);
+  transition:
+    background-color var(--transition),
+    color var(--transition);
 }
 
 .panelLink:hover,
@@ -181,7 +187,9 @@
   text-decoration: underline;
   text-decoration-color: rgba(110, 97, 85, 0.4);
   text-underline-offset: 3px;
-  transition: color var(--transition), text-decoration-color var(--transition);
+  transition:
+    color var(--transition),
+    text-decoration-color var(--transition);
 }
 
 .panelSecondary a:hover {

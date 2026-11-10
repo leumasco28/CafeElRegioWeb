@@ -5,13 +5,7 @@
 import type { SVGProps } from 'react';
 
 export type ChannelName =
-  | 'instagram'
-  | 'whatsapp'
-  | 'facebook'
-  | 'tiktok'
-  | 'links'
-  | 'external'
-  | 'chevron';
+  'instagram' | 'whatsapp' | 'facebook' | 'tiktok' | 'links' | 'external' | 'chevron';
 
 const BASE: SVGProps<SVGSVGElement> = {
   viewBox: '0 0 24 24',
@@ -21,7 +15,13 @@ const BASE: SVGProps<SVGSVGElement> = {
   focusable: 'false',
 };
 
-export default function ChannelIcon({ name, className = '' }: { name: ChannelName; className?: string }) {
+export default function ChannelIcon({
+  name,
+  className = '',
+}: {
+  name: ChannelName;
+  className?: string;
+}) {
   const props = { ...BASE, className };
 
   switch (name) {

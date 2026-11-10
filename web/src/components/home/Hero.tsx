@@ -80,13 +80,12 @@ export default function Hero() {
           </h1>
 
           <p className={styles.lead}>
-            Conoce Café El Regio, una propuesta de café colombiano que combina
-            preparaciones cuidadosas, bebidas para disfrutar y una personalidad que
-            no pasa desapercibida.
+            Conoce Café El Regio, una propuesta de café colombiano que combina preparaciones
+            cuidadosas, bebidas para disfrutar y una personalidad que no pasa desapercibida.
           </p>
           <p className={styles.leadSecondary}>
-            Descubre nuestro café empacado, encuentra tu próxima bebida favorita o
-            lleva la experiencia de El Regio a tu próximo evento.
+            Descubre nuestro café empacado, encuentra tu próxima bebida favorita o lleva la
+            experiencia de El Regio a tu próximo evento.
           </p>
 
           <div className={styles.actions}>
@@ -150,7 +149,11 @@ export default function Hero() {
                 <ChannelIcon name="chevron" className={styles.kcardChevron} />
               </button>
 
-              <div className={styles.kcardPanel} id={PANEL_ID} data-open={channelsOpen || undefined}>
+              <div
+                className={styles.kcardPanel}
+                id={PANEL_ID}
+                data-open={channelsOpen || undefined}
+              >
                 <div className={styles.kcardPanelInner}>
                   <BrandChannels brandId="kmuffis" variant="panel" />
                 </div>

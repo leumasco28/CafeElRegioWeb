@@ -19,15 +19,13 @@
 }
 
 .regio {
-  background:
-    radial-gradient(100% 120% at 100% 0%, #33251c 0%, #211913 58%, #1a1310 100%);
+  background: radial-gradient(100% 120% at 100% 0%, #33251c 0%, #211913 58%, #1a1310 100%);
   border: 1px solid rgba(233, 185, 73, 0.22);
   color: var(--color-cream);
 }
 
 .kmuffis {
-  background:
-    radial-gradient(110% 120% at 0% 0%, #fffafc 0%, var(--color-blush) 52%, #f3e2e9 100%);
+  background: radial-gradient(110% 120% at 0% 0%, #fffafc 0%, var(--color-blush) 52%, #f3e2e9 100%);
   border: 1px solid rgba(74, 35, 100, 0.14);
   color: var(--color-ink);
 }
@@ -95,7 +93,9 @@
   font-size: var(--text-sm);
   font-weight: 700;
   text-decoration: none;
-  transition: gap var(--transition), opacity var(--transition);
+  transition:
+    gap var(--transition),
+    opacity var(--transition);
 }
 
 .link:hover {

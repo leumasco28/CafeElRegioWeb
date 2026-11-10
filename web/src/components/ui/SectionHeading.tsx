@@ -21,9 +21,7 @@ export default function SectionHeading({
   align = 'left',
 }: SectionHeadingProps) {
   return (
-    <div
-      className={`${styles.wrap} ${styles[tone]} ${align === 'center' ? styles.center : ''}`}
-    >
+    <div className={`${styles.wrap} ${styles[tone]} ${align === 'center' ? styles.center : ''}`}>
       {eyebrow ? <p className={styles.eyebrow}>{eyebrow}</p> : null}
       <h2 id={id} className={styles.title}>
         {title}

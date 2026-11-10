@@ -75,7 +75,10 @@ export default function Footer() {
                     {site.contact.social.map((item) => (
                       <li key={item.id}>
                         <a href={item.href} target="_blank" rel="noopener noreferrer">
-                          <ChannelIcon name={item.id as ChannelName} className={styles.socialIcon} />
+                          <ChannelIcon
+                            name={item.id as ChannelName}
+                            className={styles.socialIcon}
+                          />
                           <span>{item.name}</span>
                           <span className="visually-hidden">
                             {' '}

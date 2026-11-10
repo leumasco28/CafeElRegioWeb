@@ -156,7 +156,7 @@ export default function EventModal({ isOpen, onClose, onSubmit }: EventModalProp
       setSubmitting(false);
       setSubmitStatus('ready');
       setSubmitMessage(
-        'Tu solicitud está lista para enviarse. Actualmente no hay un servicio de backend configurado para recibir estos datos. Mientras tanto, puedes escribirnos directamente por WhatsApp al 301 515 0059.',
+        'Tu solicitud está lista para enviarse. Actualmente no hay un servicio de backend configurado para recibir estos datos. Mientras tanto, puedes escribirnos directamente por WhatsApp al 301 515 0059.'
       );
     }, 800);
 
@@ -178,11 +178,7 @@ export default function EventModal({ isOpen, onClose, onSubmit }: EventModalProp
       }}
     >
       <div className={styles.panel}>
-        <button
-          className={styles.close}
-          onClick={closeModal}
-          aria-label="Cerrar formulario"
-        >
+        <button className={styles.close} onClick={closeModal} aria-label="Cerrar formulario">
           ✕
         </button>
 
@@ -190,13 +186,14 @@ export default function EventModal({ isOpen, onClose, onSubmit }: EventModalProp
           Hablemos de tu evento
         </h2>
         <p className={styles.subtitle}>
-          Cuéntanos qué necesitas y nos pondremos en contacto contigo por
-          WhatsApp.
+          Cuéntanos qué necesitas y nos pondremos en contacto contigo por WhatsApp.
         </p>
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.field}>
-            <label htmlFor="event-name">Nombre completo <span className={styles.required}>*</span></label>
+            <label htmlFor="event-name">
+              Nombre completo <span className={styles.required}>*</span>
+            </label>
             <input
               id="event-name"
               type="text"
@@ -214,7 +211,9 @@ export default function EventModal({ isOpen, onClose, onSubmit }: EventModalProp
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="event-phone">WhatsApp o teléfono <span className={styles.required}>*</span></label>
+            <label htmlFor="event-phone">
+              WhatsApp o teléfono <span className={styles.required}>*</span>
+            </label>
             <input
               id="event-phone"
               type="tel"
@@ -248,7 +247,9 @@ export default function EventModal({ isOpen, onClose, onSubmit }: EventModalProp
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="event-type">Tipo de evento <span className={styles.required}>*</span></label>
+            <label htmlFor="event-type">
+              Tipo de evento <span className={styles.required}>*</span>
+            </label>
             <select
               id="event-type"
               value={formData.eventType}
@@ -315,17 +316,12 @@ export default function EventModal({ isOpen, onClose, onSubmit }: EventModalProp
               required
             />
             <label htmlFor="event-privacy" className={styles.privacyText}>
-              Al enviar este formulario aceptas que tus datos personales (nombre,
-              teléfono, correo y detalles del evento) se utilicen únicamente para
-              contactarte y coordinar tu solicitud de evento. No compartiremos tu
-              información con terceros. Puedes escribirnos para ejercer tus
-              derechos de consulta, corrección o supresión de datos.
+              Al enviar este formulario aceptas que tus datos personales (nombre, teléfono, correo y
+              detalles del evento) se utilicen únicamente para contactarte y coordinar tu solicitud
+              de evento. No compartiremos tu información con terceros. Puedes escribirnos para
+              ejercer tus derechos de consulta, corrección o supresión de datos.
             </label>
-            {errors.privacy && (
-              <span className={styles.errorText}>
-                {errors.privacy}
-              </span>
-            )}
+            {errors.privacy && <span className={styles.errorText}>{errors.privacy}</span>}
           </div>
 
           <div className={styles.actions}>
@@ -337,11 +333,7 @@ export default function EventModal({ isOpen, onClose, onSubmit }: EventModalProp
             >
               Cancelar
             </button>
-            <button
-              type="submit"
-              className={styles.submit}
-              disabled={submitting}
-            >
+            <button type="submit" className={styles.submit} disabled={submitting}>
               {submitting ? 'Enviando...' : 'Enviar solicitud'}
             </button>
           </div>

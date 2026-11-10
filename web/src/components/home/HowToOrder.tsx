@@ -37,9 +37,7 @@ export default function HowToOrder() {
             <span className={styles.statusDot} aria-hidden="true" />
             <div>
               <strong>Pedidos por WhatsApp: próxima fase</strong>
-              <p>
-                Este sitio aún no procesa pagos, no confirma compras y no envía pedidos.
-              </p>
+              <p>Este sitio aún no procesa pagos, no confirma compras y no envía pedidos.</p>
             </div>
           </div>
         </div>

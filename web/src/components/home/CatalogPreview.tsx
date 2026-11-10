@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { brandsById } from '../../content/brands.ts';
 import type { Brand } from '../../content/brands.ts';
-import { catalogNote, categoriesById, type Category, products, type Product } from '../../content/catalog.ts';
+import {
+  catalogNote,
+  categoriesById,
+  type Category,
+  products,
+  type Product,
+} from '../../content/catalog.ts';
 import SectionHeading from '../ui/SectionHeading.tsx';
 import styles from './CatalogPreview.module.css';
 
@@ -52,7 +58,9 @@ function ProductCard({ item }: ProductCardProps) {
 
       <p className={styles.price}>
         <span className={styles.priceDot} aria-hidden="true" />
-        {typeof item.price === 'number' ? priceFormatter.format(item.price) : 'Precio por confirmar'}
+        {typeof item.price === 'number'
+          ? priceFormatter.format(item.price)
+          : 'Precio por confirmar'}
       </p>
     </li>
   );
@@ -64,8 +72,7 @@ export default function CatalogPreview() {
 
   const visibleProducts = products.filter((item: Product) => {
     const matchBrand = brandFilter === 'all' || item.brandId === brandFilter;
-    const matchCategory =
-      categoryFilter === 'all' || item.categoryId === categoryFilter;
+    const matchCategory = categoryFilter === 'all' || item.categoryId === categoryFilter;
     return matchBrand && matchCategory;
   });
 

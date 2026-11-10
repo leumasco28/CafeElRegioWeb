@@ -59,6 +59,34 @@ npx tsc --noEmit
 
 ---
 
+## Calidad de código (ESLint + Prettier + Husky)
+
+Se agregó tooling de linting, formato y hooks de pre-commit:
+
+- **ESLint** (`eslint.config.js`, flat config): reglas recomendadas de TypeScript, React Hooks y React Refresh (Fast Refresh).
+- **Prettier** (`.prettierrc`): `printWidth: 100`, comillas simples, 2 espacios, punto y coma.
+- **Husky** + **lint-staged**: pre-commit que ejecuta ESLint `--fix` y Prettier `--write` sobre los archivos staged antes de cada commit.
+
+Comandos disponibles (ejecutar desde `web/`):
+
+```bash
+npm run lint          # revisa código con ESLint
+npm run lint:fix      # autocorrección con ESLint
+npm run format        # aplica formato Prettier
+npm run format:check  # verifica formato sin modificar archivos
+```
+
+Para verificar todo junto antes de commitear:
+
+```bash
+npx tsc --noEmit      # tipos (TypeScript)
+npm run lint          # lint (ESLint)
+npm run format:check  # formato (Prettier)
+npm run build         # build de producción (Vite)
+```
+
+---
+
 ## Estructura
 
 ```
@@ -112,10 +140,10 @@ web/
 
 ## Identidad y logos
 
-| Marca | Archivo en el sitio | Origen en `Recursos/` | Nota |
-| --- | --- | --- | --- |
-| Café El Regio | `public/assets/brand/regio-logo.webp` | `Logo para registro.png` | Emblema aprobado. Se redujo de 1254 × 1254 px a 640 × 640 px y se convirtió a WebP (calidad 95) para aligerar la carga: de 1,49 MB a 85 KB. El dibujo no se modificó. |
-| KMuffis | `public/assets/brand/kmuffis-logo.jpeg` | `Regio-kmfs/logo-kmuffis-old.jpeg` | Archivo indicado por el cliente como logo aprobado (640 × 640). |
+| Marca         | Archivo en el sitio                     | Origen en `Recursos/`              | Nota                                                                                                                                                                  |
+| ------------- | --------------------------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Café El Regio | `public/assets/brand/regio-logo.webp`   | `Logo para registro.png`           | Emblema aprobado. Se redujo de 1254 × 1254 px a 640 × 640 px y se convirtió a WebP (calidad 95) para aligerar la carga: de 1,49 MB a 85 KB. El dibujo no se modificó. |
+| KMuffis       | `public/assets/brand/kmuffis-logo.jpeg` | `Regio-kmfs/logo-kmuffis-old.jpeg` | Archivo indicado por el cliente como logo aprobado (640 × 640).                                                                                                       |
 
 Los logos tienen fondo blanco. En la interfaz se colocan sobre un fondo crema con
 `mix-blend-mode: multiply`, de modo que el blanco se funde con el fondo y el emblema se ve
@@ -130,14 +158,14 @@ El icono del sitio usa el rostro de Don Regio que el cliente entregó como
 `Recursos/favicon2.jpg` (500 × 500). No se redibujó nada: se escaló el original y se
 generaron los formatos necesarios.
 
-| Archivo | Tamaño | Uso |
-| --- | --- | --- |
-| `public/favicon.ico` | 16, 32 y 48 px | Pestaña del navegador (respaldo) |
-| `public/favicon-16x16.png` | 16 px | Pestañas de baja densidad |
-| `public/favicon-32x32.png` | 32 px | Pestañas estándar |
-| `public/apple-touch-icon.png` | 180 px | iOS / iPadOS |
-| `public/icon-192.png` | 192 px | Android / manifiesto |
-| `public/icon-512.png` | 512 px | Android / manifiesto |
+| Archivo                       | Tamaño         | Uso                              |
+| ----------------------------- | -------------- | -------------------------------- |
+| `public/favicon.ico`          | 16, 32 y 48 px | Pestaña del navegador (respaldo) |
+| `public/favicon-16x16.png`    | 16 px          | Pestañas de baja densidad        |
+| `public/favicon-32x32.png`    | 32 px          | Pestañas estándar                |
+| `public/apple-touch-icon.png` | 180 px         | iOS / iPadOS                     |
+| `public/icon-192.png`         | 192 px         | Android / manifiesto             |
+| `public/icon-512.png`         | 512 px         | Android / manifiesto             |
 
 El fondo es blanco (el del archivo original), de modo que el dibujo conserva sus claros
 internos. El manifiesto `site.webmanifest` solo declara los iconos y los colores de marca.
@@ -149,10 +177,10 @@ internos. El manifiesto `site.webmanifest` solo declara los iconos y los colores
 Los perfiles viven en `src/content/site.ts` → `contact.social` y se muestran en la columna
 **Contacto** del pie de página:
 
-| Red | Perfil | Origen |
-| --- | --- | --- |
+| Red       | Perfil                    | Origen                               |
+| --------- | ------------------------- | ------------------------------------ |
 | Instagram | `@cafeelregiobucaramanga` | `Recursos/QR-ElRegio-Instagram.jpeg` |
-| TikTok | `@elregiobucaramanga` | `Recursos/QR-ElRegio-Tiktok.jpeg` |
+| TikTok    | `@elregiobucaramanga`     | `Recursos/QR-ElRegio-Tiktok.jpeg`    |
 
 Se abren en una pestaña nueva. Los canales de KMuffis siguen separados en
 `brands.js` (ver abajo).
@@ -164,12 +192,12 @@ Se abren en una pestaña nueva. Los canales de KMuffis siguen separados en
 Los enlaces oficiales de KMuffis viven en `src/content/brands.ts`, dentro de
 `brandsById.kmuffis.contact`:
 
-| Canal | Enlace | Peso |
-| --- | --- | --- |
-| Instagram | `https://www.instagram.com/Kmuffis_pasteleria` | Principal |
-| WhatsApp | `https://wa.link/wbcfz6` | Principal |
-| Facebook | `https://www.facebook.com/share/19X1yCwZHW/?mibextid=wwXIfr` | Secundario |
-| Página de enlaces | `https://www.atom.bio/kmuffis` | Secundario |
+| Canal             | Enlace                                                       | Peso       |
+| ----------------- | ------------------------------------------------------------ | ---------- |
+| Instagram         | `https://www.instagram.com/Kmuffis_pasteleria`               | Principal  |
+| WhatsApp          | `https://wa.link/wbcfz6`                                     | Principal  |
+| Facebook          | `https://www.facebook.com/share/19X1yCwZHW/?mibextid=wwXIfr` | Secundario |
+| Página de enlaces | `https://www.atom.bio/kmuffis`                               | Secundario |
 
 `primary` y `secondary` definen el orden y el peso visual; `channels` guarda nombre,
 usuario y URL. Los enlaces de Café El Regio siguen en `site.contact` y no se mezclan con
@@ -177,7 +205,7 @@ estos.
 
 Se muestran en tres lugares, con el componente compartido `ui/BrandChannels.tsx`:
 
-- **Portada**: botón *Canales oficiales* en la parte inferior de la tarjeta de KMuffis.
+- **Portada**: botón _Canales oficiales_ en la parte inferior de la tarjeta de KMuffis.
   Con ratón, el panel aparece al pasar el cursor; en táctil, con un toque. Cierra con
   `Escape`, con un toque fuera o al alejar el cursor.
 - **Sección de marcas**: bloque discreto dentro de la tarjeta de KMuffis, con Instagram y
@@ -201,8 +229,8 @@ Lo que falta confirmar antes de publicar la carta real:
 - **Domicilios**: zonas, horarios y costo.
 - **Datos legales**: razón social, NIT y avisos requeridos.
 
-Mientras no estén confirmados, la interfaz muestra *“Precio por confirmar”* y
-*“Sitio en construcción”*. **No se deben inventar precios.**
+Mientras no estén confirmados, la interfaz muestra _“Precio por confirmar”_ y
+_“Sitio en construcción”_. **No se deben inventar precios.**
 
 ---
 
