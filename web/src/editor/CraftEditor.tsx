@@ -181,7 +181,8 @@ const resolver: Record<string, React.ComponentType<any>> = {
   Button: CraftButton,
 };
 
-export function CraftEditor({ page, setPage, selectNode }: any) {
+// Controles de deshacer/rehacer dentro del contexto de <Editor>
+function EditorControls({ selectNode }: { selectNode: (id: string | null) => void }) {
   const editor = useEditor();
 
   const undo = useCallback(() => editor.actions.history.undo(), [editor]);
@@ -196,6 +197,56 @@ export function CraftEditor({ page, setPage, selectNode }: any) {
     }
   }, [selected, selectNode]);
 
+  return (
+    <div
+      style={{
+        height: '32px',
+        background: '#e5e7eb',
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0 1rem',
+        gap: '0.75rem',
+        fontSize: '0.75rem',
+        color: '#6b7280',
+        borderTop: '1px solid #d1d5db',
+      }}
+    >
+      <button
+        onClick={undo}
+        title="Deshacer"
+        style={{
+          padding: '4px 8px',
+          fontSize: '0.875rem',
+          background: '#2563eb',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '4px',
+          cursor: 'pointer',
+        }}
+      >
+        ↩
+      </button>
+      <button
+        onClick={redo}
+        title="Rehacer"
+        style={{
+          padding: '4px 8px',
+          fontSize: '0.875rem',
+          background: '#2563eb',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '4px',
+          cursor: 'pointer',
+        }}
+      >
+        ↪
+      </button>
+      <span>Editor visual activo</span>
+    </div>
+  );
+}
+
+export function CraftEditor({ page, setPage, selectNode }: any) {
   const serialized = useMemo(() => {
     if (!page) return {};
     return pageToCraftNodes(page.root);
@@ -239,51 +290,7 @@ export function CraftEditor({ page, setPage, selectNode }: any) {
             <div style={{ position: 'relative', minHeight: '100vh' }}>{render}</div>
           </div>
 
-          <div
-            style={{
-              height: '32px',
-              background: '#e5e7eb',
-              display: 'flex',
-              alignItems: 'center',
-              padding: '0 1rem',
-              gap: '0.75rem',
-              fontSize: '0.75rem',
-              color: '#6b7280',
-              borderTop: '1px solid #d1d5db',
-            }}
-          >
-            <button
-              onClick={undo}
-              title="Deshacer"
-              style={{
-                padding: '4px 8px',
-                fontSize: '0.875rem',
-                background: '#2563eb',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-              }}
-            >
-              ↩
-            </button>
-            <button
-              onClick={redo}
-              title="Rehacer"
-              style={{
-                padding: '4px 8px',
-                fontSize: '0.875rem',
-                background: '#2563eb',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-              }}
-            >
-              ↪
-            </button>
-            <span>Editor visual activo</span>
-          </div>
+          <EditorControls selectNode={selectNode} />
         </div>
       )}
     >
