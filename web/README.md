@@ -137,16 +137,17 @@ web/
 │  ├─ content/                   # Datos separados de la interfaz
 │  │  ├─ site.ts                 # Nombre, ciudad, contacto, estado de pedidos
 │  │  ├─ brands.ts               # Metadatos y logos de cada marca
-│  │  └─ catalog.ts              # Categorías y productos de muestra
-│  │  └─ eventTypes.ts           # Tipos de evento compartidos (Events y EventModal)
-│  ├─ editor/                    # Editor visual propio (Puck a medida con PocketBase)
-│  │  ├─ CraftEditor.tsx         # Wrapper de Craft.js: Editor, Frame, Element, useNode (drag-and-drop)\n│  │  ├─ canvas.tsx              # Lienzo, autenticación, carga/guardado, auto-guardar, botón Agregar elemento
+│  │  ├─ catalog.ts              # Categorías y productos de muestra
+│  │  ├─ pages.json              # Datos de páginas para el editor visual (JSON local)
+│  │  ├─ eventTypes.ts           # Tipos de evento compartidos (Events y EventModal)
+│  ├─ editor/                    # Editor visual propio (Puck a medida con JSON local)
+│  │  ├─ CraftEditor.tsx         # Wrapper de Craft.js: Editor, Frame, Element, useNode (drag-and-drop)
+│  │  ├─ canvas.tsx              # Lienzo, carga/guardado, auto-guardar, botón Agregar elemento
 │  │  ├─ panels/                 # ContentPanel, StylePanel, AdvancedPanel
 │  │  └─ store/                  # pageStore (Zustand + undo/redo), history (pila de estados)
 │  ├─ lib/
 │  │  ├─ order.ts                # Utilidades de pedido (Fase 2, desactivadas)
-│  │  ├─ pocketbaseClient.ts     # Cliente PocketBase: pbSignIn, loadPage, savePage, listPages
-│  │  └─ pocketbaseEnv.ts        # Variables de entorno del administrador
+│  │  └─ pagesClient.ts          # Cliente local: loadPage, savePage, listPages (JSON + localStorage)
 │  ├─ renderer/                  # Renderizador ligero (solo lee JSON y dibuja)
 │  │  ├─ PageRenderer.tsx        # Renderizador recursivo con selección de nodos
 │  │  ├─ resolveComponent.tsx    # Mapea tipo JSON → componente React
@@ -207,7 +208,7 @@ generaron los formatos necesarios.
 | ----------------------------- | -------------- | -------------------------------- |
 | `public/favicon.ico`          | 16, 32 y 48 px | Pestaña del navegador (respaldo) |
 | `public/favicon-16x16.png`    | 16 px          | Pestañas de baja densidad        |
-| `public/favicon-32x32.png`    | 32 px          | Pestañas estándar                |
+| `public/favicon-32x32.png`    | 32 px          | Pestañas estándares              |
 | `public/apple-touch-icon.png` | 180 px         | iOS / iPadOS                     |
 | `public/icon-192.png`         | 192 px         | Android / manifiesto             |
 | `public/icon-512.png`         | 512 px         | Android / manifiesto             |
@@ -259,7 +260,7 @@ Se muestran en tres lugares, con el componente compartido `ui/BrandChannels.tsx`
   Café El Regio.
 
 Todos los enlaces abren en una pestaña nueva (`target="_blank"` + `rel="noopener noreferrer"`)
-y el texto “Todos los enlaces” apunta al agregador `atom.bio`.
+y el texto "Todos los enlaces" apunta al agregador `atom.bio`.
 
 ---
 
@@ -274,8 +275,8 @@ Lo que falta confirmar antes de publicar la carta real:
 - **Domicilios**: zonas, horarios y costo.
 - **Datos legales**: razón social, NIT y avisos requeridos.
 
-Mientras no estén confirmados, la interfaz muestra _“Precio por confirmar”_ y
-_“Sitio en construcción”_. **No se deben inventar precios.**
+Mientras no estén confirmados, la interfaz muestra _"Precio por confirmar"_ y
+_"Sitio en construcción"_. **No se deben inventar precios.**
 
 ---
 
@@ -293,7 +294,7 @@ se renderiza ningún enlace a WhatsApp. La interfaz solo explica cómo funcionar
 
 ## Accesibilidad y rendimiento
 
-- Enlace “Saltar al contenido”, jerarquía de encabezados y textos alternativos.
+- Enlace "Saltar al contenido", jerarquía de encabezados y textos alternativos.
 - Navegación por teclado con foco visible; el menú móvil cierra con `Escape`.
 - El panel de canales de KMuffis se abre con hover (ratón) o tap, se recorre con `Tab` y
   cierra con `Escape` devolviendo el foco al botón.
@@ -305,9 +306,9 @@ se renderiza ningún enlace a WhatsApp. La interfaz solo explica cómo funcionar
 
 ---
 
-## Editor visual propio (Puck a medida) con PocketBase
+## Editor visual propio (Puck a medida) con JSON local + localStorage
 
-En lugar de usar un CMS de terceros ni servicios en la nube, se construirá un **editor visual propio** sobre React + TypeScript que permita maquetar páginas, cambiar textos e imágenes y publicar sin tocar código.
+En lugar de usar un CMS de terceros ni servicios en la nube, se construyó un **editor visual propio** sobre React + TypeScript que permite maquetar páginas, cambiar textos e imágenes y publicar sin tocar código.
 
 ### Motor de edición
 
@@ -315,19 +316,19 @@ En lugar de usar un CMS de terceros ni servicios en la nube, se construirá un *
 - **Zustand**: estado del árbol, historial undo/redo y paneles de propiedades (Contenido / Estilo / Avanzado).
 - **Tailwind CSS**: controles visuales de estilo (colores, padding, márgenes, flex/grid).
 
-### Almacenamiento: PocketBase
+### Almacenamiento: JSON local + localStorage
 
-Se eligió **PocketBase** (único ejecutable, sin servidor externo) porque incluye base de datos, API REST, autenticación, almacenamiento de archivos y panel de administración web, con SDK oficial para TypeScript/React. El árbol JSON de cada página se guarda en un campo JSON y se consume desde el frontend sin redeploy.
+Se eligió **JSON local + localStorage** porque no requiere servidor, no tiene dependencias externas y funciona inmediatamente. El editor lee `src/content/pages.json` y persiste cambios en `localStorage` del navegador. En producción con backend, `pagesClient.ts` se reemplaza por un fetch a la API sin tocar el editor.
 
-Colecciones planeadas en PocketBase:
+Estructura del JSON:
 
-- **pages**: itle, slug (único), status (draft / published), heme (JSON).
-- **page_nodes**: page, parent (opcional), ype, props (JSON), styles (JSON por breakpoint), order.
-- **ssets**: ile, url, relación opcional a página o nodo.
+- **pages**: arreglo con `id`, `slug` (único), `title`, `status` (`draft` / `published`), `theme` (JSON), `createdAt`, `updatedAt`, `root` (árbol de nodos).
+- **Nodos**: `id`, `type`, `parentId` (opcional), `props` (JSON), `styles` (JSON por breakpoint), `order` (número).
 
 ### Estructura de carpetas (en src/)
 
-`src/
+```
+src/
   editor/            # Editor visual (solo en /admin)
     canvas.tsx       # Lienzo con Craft.js, selección, edición inline
     panels/          # Contenido, Estilo, Avanzado
@@ -338,10 +339,10 @@ Colecciones planeadas en PocketBase:
     blocks/          # Hero, Catalog, EventForm, Navbar
     resolveComponent.tsx  # Mapea tipo JSON -> componente React
   types/             # page.ts, component.ts, breakpoint.ts, theme.ts
-  lib/               # pocketbaseClient.ts`
+  lib/               # pagesClient.ts
+```
 
-El
-enderer/ no depende de editor/: la página publicada solo importa el renderizador y el JSON, sin paneles ni controles de arrastre.
+El `renderer/` no depende de `editor/`: la página publicada solo importa el renderizador y el JSON, sin paneles ni controles de arrastre.
 
 ---
 
@@ -370,21 +371,7 @@ enderer/ no depende de editor/: la página publicada solo importa el renderizado
 
 El frontend usa `react-router-dom` con dos rutas definidas en `src/App.tsx`:
 
-- **`/`** â€” sitio estÃ¡tico pÃºblico (Hero, BrandSplit, CatalogPreview, Events, HowToOrder).
-- **`/editor/:slug`** â€” editor visual propio (Canvas con Craft.js + drag-and-drop) que carga y guarda pÃ¡ginas desde PocketBase. Ejemplo: `http://localhost:5173/editor/inicio`.
+- **`/`** — sitio estático público (Hero, BrandSplit, CatalogPreview, Events, HowToOrder).
+- **`/editor/:slug`** — editor visual propio (Canvas con Craft.js + drag-and-drop) que carga y guarda páginas desde JSON local. Ejemplo: `http://localhost:5173/editor/inicio`.
 
-Para entrar al editor de una pÃ¡gina especÃ­fica, navega a `/editor/<slug>` (por ejemplo `/editor/inicio`).
-
-### Script de setup de PocketBase
-
-`web/setup-pocketbase.js` automatiza la creaciÃ³n del superusuario, las colecciones (`pages`, `page_nodes`, `assets`) y la pÃ¡gina de ejemplo `/inicio` con nodos de ejemplo. Ejecutar con PocketBase corriendo en `http://127.0.0.1:8090`:
-
-```bash
-node setup-pocketbase.js
-```
-
-Credenciales del superusuario:
-
-- Email: `admin@cafeelregio.local`
-- ContraseÃ±a: `admin12345`
-- Panel admin: `http://127.0.0.1:8090/_/`
+Para entrar al editor de una página específica, navega a `/editor/<slug>` (por ejemplo `/editor/inicio`).

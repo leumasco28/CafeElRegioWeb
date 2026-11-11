@@ -242,7 +242,7 @@ Fase 1 al 100% completa. Listo para pasar a la Fase 2 (confirmar precios del cat
 
 ---
 
-## 8. Editor visual propio (Puck a medida) con PocketBase
+## 8. Editor visual propio (Puck a medida) con JSON local + localStorage
 
 En lugar de usar un CMS de terceros (WordPress headless, Strapi, Sanity) ni servicios en la nube, el sitio contará con un **editor visual propio** construido sobre React + TypeScript que permite al dueño maquetar páginas, cambiar textos e imágenes y publicar sin tocar código.
 
@@ -252,7 +252,7 @@ En lugar de usar un CMS de terceros (WordPress headless, Strapi, Sanity) ni serv
 - **Zustand** para el estado del árbol, el historial undo/redo y los paneles de propiedades (Contenido / Estilo / Avanzado).
 - **Tailwind CSS** (o variables CSS por breakpoint) para los controles visuales de estilo (colores, padding, márgenes, flex/grid).
 
-### Almacenamiento: PocketBase
+### Almacenamiento: JSON local + localStorage
 
 Se eligió **PocketBase** sobre SQLite solo y Supabase CLI porque:
 
@@ -285,7 +285,7 @@ ode.
     blocks/          # Hero, Catalog, EventForm, Navbar
     resolveComponent.tsx  # Mapea tipo JSON -> componente React
   types/             # page.ts, component.ts, breakpoint.ts, theme.ts
-  lib/               # pocketbaseClient.ts`
+  lib/               # pagesClient.ts`
 
 ### Capas del sistema
 
@@ -300,8 +300,7 @@ ode.
 
 ✅ **Implementado:**
 
-- `web/src/lib/pocketbaseClient.ts` — cliente PocketBase tipado, `pbSignIn`, `loadPage`, `savePage`, `listPages`, conversión PageDB/PageNodeDB ↔ PageDocument/PageNode.
-- `web/src/lib/pocketbaseEnv.ts` — variables de entorno del administrador.
+- `web/src/lib/pagesClient.ts` — cliente local tipado: `loadPage`, `savePage`, `listPages` (lee `src/content/pages.json` y persiste en `localStorage`).
 - `web/src/editor/CraftEditor.tsx` — wrapper de Craft.js (`Editor`, `Frame`, `Element`, `useNode`) que habilita arrastre y soltar real sobre el lienzo; sincroniza cambios con Zustand + PocketBase vía `onNodesChange`.
 - `web/src/editor/canvas.tsx` — lienzo con autenticación, carga/guardado de página desde PocketBase, auto-guardar debounced (800 ms), selector de páginas, botón "+ Agregar elemento" y barra de herramientas con deshacer/rehacer.
 - `web/src/editor/store/pageStore.ts` — Zustand con `setPage`, `updateNode`, `addNode`, `removeNode`, `undo`, `redo`, `canUndo`, `canRedo`; cada cambio empuja al historial `pageHistory`.
@@ -312,21 +311,18 @@ ode.
 - `web/src/renderer/PageRenderer.tsx` + componentes `Section`, `Row`, `Column`, `Text`, `Image`, `Button` — renderizador recursivo con `onSelect` para selección de nodos.
 - `web/src/types/page.ts` — tipos `PageDocument`, `PageNode`, `PageTheme`, `NodeStyles`, `Breakpoint`.
 
-🔧 **PocketBase local:** ejecutándose en `http://127.0.0.1:8090` con superusuario `admin@cafeelregio.local`, colecciones `pages`, `page_nodes`, `assets` y página de ejemplo `/inicio` con árbol de nodos (Sección → Contenedor → Fila → Columna → Texto + Botón).
+📁 **Datos locales:** archivo `src/content/pages.json` con la página de ejemplo `/inicio` (Sección → Contenedor → Fila → Columna → Texto + Botón). Los cambios se persisten en `localStorage` del navegador.
 
-**Script de setup:** web/setup-pocketbase.js crea el superusuario, las colecciones y la p�gina /inicio con nodos de ejemplo ejecutando
-ode setup-pocketbase.js.
-**Routing del frontend:** web/src/App.tsx usa
-eact-router-dom con dos rutas:
+**Routing del frontend:** web/src/App.tsx usa react-router-dom con dos rutas:
 
 - / — sitio estático público (Hero, BrandSplit, CatalogPreview, Events, HowToOrder).
-- /editor/:slug — editor visual (Canvas) que carga la página desde PocketBase por slug. Ejemplo: http://localhost:5173/editor/inicio.
+- /editor/:slug — editor visual (Canvas) que carga la página desde JSON local por slug. Ejemplo: http://localhost:5173/editor/inicio.
 
 ✅ **Implementado (arrastrar y soltar):**
 
 - `web/src/editor/CraftEditor.tsx` — wrapper de Craft.js `<Editor>` con `resolver`, `onRender`, `Frame` y `Element`; componentes `CraftSection`, `CraftRow`, `CraftColumn`, `CraftText`, `CraftImage`, `CraftButton` usando `useNode()` y `connectors.connect()` para drag-and-drop real.
 - `web/src/editor/canvas.tsx` — botón "+ Agregar elemento" en la barra de herramientas con selector de tipos (Sección, Fila, Columna, Texto, Imagen, Botón) que inserta nodos en el árbol y los selecciona automáticamente.
-- `web/src/lib/pocketbaseClient.ts` — `savePage` ahora persiste el nodo raíz (`root`) como un nodo más en la colección `page_nodes` de PocketBase.
+- `web/src/lib/pagesClient.ts` — `savePage` ahora persiste el nodo raíz (`root`) como un nodo más en el árbol JSON local y en `localStorage`.
 
 📋 **Pendiente (mejoras futuras del editor):**
 

@@ -22,7 +22,6 @@
   },
   "dependencies": {
     "@craftjs/core": "^0.2.12",
-    "pocketbase": "^0.28.2",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-router-dom": "^7.18.5",

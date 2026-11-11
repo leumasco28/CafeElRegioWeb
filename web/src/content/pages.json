@@ -1,0 +1,72 @@
+{
+  "pages": [
+    {
+      "id": "page_inicio",
+      "slug": "/inicio",
+      "title": "Inicio",
+      "status": "published",
+      "theme": {
+        "primaryColor": "#4A2C2A",
+        "secondaryColor": "#D4A373",
+        "fontHeading": "Iowan",
+        "fontBody": "system-ui"
+      },
+      "createdAt": "2026-11-10T00:00:00Z",
+      "updatedAt": "2026-11-10T00:00:00Z",
+      "root": {
+        "id": "root",
+        "type": "Section",
+        "parentId": null,
+        "props": { "className": "hero-section" },
+        "styles": {},
+        "children": [
+          {
+            "id": "node_container",
+            "type": "Container",
+            "parentId": "root",
+            "props": { "maxWidth": "1200px", "margin": "0 auto" },
+            "styles": {},
+            "children": [
+              {
+                "id": "node_row",
+                "type": "Row",
+                "parentId": "node_container",
+                "props": { "gap": "2rem" },
+                "styles": {},
+                "children": [
+                  {
+                    "id": "node_column",
+                    "type": "Column",
+                    "parentId": "node_row",
+                    "props": { "span": 6 },
+                    "styles": {},
+                    "children": [
+                      {
+                        "id": "node_text",
+                        "type": "Text",
+                        "parentId": "node_column",
+                        "props": { "tag": "h1", "content": "Café El Regio", "align": "left" },
+                        "styles": { "desktop": { "fontSize": "3rem", "color": "#4A2C2A" } },
+                        "children": []
+                      },
+                      {
+                        "id": "node_button",
+                        "type": "Button",
+                        "parentId": "node_column",
+                        "props": { "text": "Ver catálogo", "href": "/carta", "variant": "primary" },
+                        "styles": {
+                          "desktop": { "padding": "12px 24px", "backgroundColor": "#D4A373" }
+                        },
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

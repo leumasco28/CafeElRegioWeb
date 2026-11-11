@@ -2,8 +2,7 @@
 import { usePageStore } from './store/pageStore';
 import { CraftEditor } from './CraftEditor';
 import type { PageNode } from '../types/page';
-import { pbSignIn, loadPage, savePage, listPages } from '../lib/pocketbaseClient';
-import { VITE_POCKETBASE_ADMIN_EMAIL, VITE_POCKETBASE_ADMIN_PASSWORD } from '../lib/pocketbaseEnv';
+import { loadPage, savePage, listPages } from '../lib/pagesClient';
 import { ContentPanel } from './panels/ContentPanel';
 import { StylePanel } from './panels/StylePanel';
 import { AdvancedPanel } from './panels/AdvancedPanel';
@@ -38,6 +37,7 @@ export function Canvas({ initialSlug = '/inicio' }: CanvasProps) {
   const [activeTab, setActiveTab] = useState<PanelTab>('contenido');
   const [addMenuOpen, setAddMenuOpen] = useState(false);
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const nodeIdCounter = useRef(0);
 
   const scheduleSave = useCallback(() => {
     if (!page) return;
@@ -55,25 +55,43 @@ export function Canvas({ initialSlug = '/inicio' }: CanvasProps) {
     scheduleSave();
   }, [page, scheduleSave]);
 
+  const loadCurrentPage = useCallback(
+    (slug: string) => {
+      setLoading(true);
+      setError(null);
+      void loadPage(slug)
+        .then((doc) => {
+          if (doc) {
+            setPage(doc);
+            selectNode(null);
+          } else {
+            setError(`No se encontr\u00f3 la p\u00e1gina "${slug}"`);
+          }
+          setLoading(false);
+        })
+        .catch((err) => {
+          setError(err instanceof Error ? err.message : 'Error cargando la p\u00e1gina');
+          setLoading(false);
+        });
+    },
+    [setPage, selectNode]
+  );
+
   useEffect(() => {
     let cancelled = false;
 
     async function init() {
       try {
-        const email = VITE_POCKETBASE_ADMIN_EMAIL || 'admin@cafeelregio.local';
-        const password = VITE_POCKETBASE_ADMIN_PASSWORD || 'admin12345';
-        await pbSignIn(email, password);
-
         const pageList = await listPages();
         setPages(pageList);
 
         if (!cancelled) {
-          const current = pages.find((p) => p.slug === currentSlug);
+          const current = pageList.find((p) => p.slug === currentSlug);
           if (current) {
-            await loadCurrentPage(currentSlug);
+            loadCurrentPage(currentSlug);
           } else if (pageList.length > 0) {
             setCurrentSlug(pageList[0].slug);
-            await loadCurrentPage(pageList[0].slug);
+            loadCurrentPage(pageList[0].slug);
           }
         }
       } catch (err) {
@@ -88,36 +106,18 @@ export function Canvas({ initialSlug = '/inicio' }: CanvasProps) {
     return () => {
       cancelled = true;
     };
-  }, []);
-
-  async function loadCurrentPage(slug: string) {
-    setLoading(true);
-    setError(null);
-    try {
-      const doc = await loadPage(slug);
-      if (doc) {
-        setPage(doc);
-        selectNode(null);
-      } else {
-        setError(`No se encontr\u00f3 la p\u00e1gina "${slug}"`);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error cargando la p\u00e1gina');
-    } finally {
-      setLoading(false);
-    }
-  }
+  }, [currentSlug, loadCurrentPage]);
 
   async function handlePageChange(slug: string) {
     setCurrentSlug(slug);
-    await loadCurrentPage(slug);
+    loadCurrentPage(slug);
   }
 
   function handleAddElement(type: ElementType) {
     setAddMenuOpen(false);
     if (!page) return;
 
-    const newId = `node_${Date.now()}`;
+    const newId = `node_${(nodeIdCounter.current += 1)}`;
     const newNode: PageNode = {
       id: newId,
       type,
@@ -125,7 +125,7 @@ export function Canvas({ initialSlug = '/inicio' }: CanvasProps) {
       props: {},
       styles: {},
       children: [],
-      order: Date.now(),
+      order: nodeIdCounter.current,
     };
 
     if (type === 'Text') {
@@ -396,7 +396,7 @@ export function Canvas({ initialSlug = '/inicio' }: CanvasProps) {
           )}
 
           <div style={{ marginTop: '1rem', fontSize: '0.75rem', color: '#9ca3af' }}>
-            Cambios se guardan autom\u00e1ticamente en PocketBase
+            Cambios se guardan autom\u00e1ticamente en localStorage
           </div>
         </div>
       </div>

@@ -1,16 +1,16 @@
 ﻿import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom';
-import Header from './components/layout/Header.tsx';
-import Footer from './components/layout/Footer.tsx';
-import Hero from './components/home/Hero.tsx';
-import BrandSplit from './components/home/BrandSplit.tsx';
-import CatalogPreview from './components/home/CatalogPreview.tsx';
-import Events from './components/home/Events.tsx';
-import HowToOrder from './components/home/HowToOrder.tsx';
-import { Canvas } from './editor/canvas';
+import Header from './components/layout/Header';
+import Footer from './components/layout/Footer';
+import Hero from './components/home/Hero';
+import BrandSplit from './components/home/BrandSplit';
+import CatalogPreview from './components/home/CatalogPreview';
+import Events from './components/home/Events';
+import HowToOrder from './components/home/HowToOrder';
+import { Canvas } from './editor/canvas.tsx';
 
 /**
  * Página del editor visual. Extrae el slug de la URL y lo pasa a Canvas.
- * Ejemplo: /editor/inicio  -> carga la página con slug "/inicio" desde PocketBase.
+ * Ejemplo: /editor/inicio  -> carga la página con slug "/inicio" desde JSON local + localStorage.
  */
 function EditorPage() {
   const params = useParams<{ slug: string }>();
