@@ -240,7 +240,6 @@ Fase 1 al 100% completa. Listo para pasar a la Fase 2 (confirmar precios del cat
 
 ---
 
-
 ---
 
 ## 8. Editor visual propio (Puck a medida) con PocketBase
@@ -265,17 +264,16 @@ Se eligió **PocketBase** sobre SQLite solo y Supabase CLI porque:
 
 ### Modelo de datos (colecciones en PocketBase)
 
-**pages**: 	itle, slug (único: /inicio, /carta), status (draft / published), 	heme (JSON con colores y tipografías globales).
+**pages**: itle, slug (único: /inicio, /carta), status (draft / published), heme (JSON con colores y tipografías globales).
 
-**page_nodes** (árbol de la página): page (relación), parent (relación opcional para anidamiento), 	ype (Section, Container, Row, Column, Text, Image, Button, Hero, Catalog, EventForm...), props (JSON), styles (JSON por breakpoint: desktop, 	ablet, mobile), order (número para ordenar hermanos).
+**page_nodes** (árbol de la página): page (relación), parent (relación opcional para anidamiento), ype (Section, Container, Row, Column, Text, Image, Button, Hero, Catalog, EventForm...), props (JSON), styles (JSON por breakpoint: desktop, ablet, mobile), order (número para ordenar hermanos).
 
-**ssets**: ile (imagen subida), url (generada por PocketBase), relación opcional a page o 
+**ssets**: ile (imagen subida), url (generada por PocketBase), relación opcional a page o
 ode.
 
 ### Estructura de carpetas (en web/src/)
 
-`
-src/
+`src/
   editor/            # Editor visual (solo en /admin)
     canvas.tsx       # Lienzo con Craft.js, selección, edición inline
     panels/          # Contenido, Estilo, Avanzado
@@ -286,19 +284,42 @@ src/
     blocks/          # Hero, Catalog, EventForm, Navbar
     resolveComponent.tsx  # Mapea tipo JSON -> componente React
   types/             # page.ts, component.ts, breakpoint.ts, theme.ts
-  lib/               # pocketbaseClient.ts
-`
+  lib/               # pocketbaseClient.ts`
 
 ### Capas del sistema
 
 1. Motor de edición (Craft.js + Zustand): árbol en memoria, selección, arrastre, undo/redo.
 2. Panel de propiedades: pestañas Contenido / Estilo / Avanzado.
 3. Sistema responsive: estilos por breakpoint, selector Desktop/Tablet/Mobile en el lienzo.
-4. Tokens globales: paleta y tipografía en 	heme del JSON.
+4. Tokens globales: paleta y tipografía en heme del JSON.
 5. Renderizador limpio: PageRenderer recursivo que dibuja la página publicada (sin paneles de edición).
 6. Edición inline: doble clic sobre textos para editarlos directamente en el lienzo.
 
+### Estado de implementación (2026-11-10)
+
+✅ **Implementado:**
+
+- `web/src/lib/pocketbaseClient.ts` — cliente PocketBase tipado, `pbSignIn`, `loadPage`, `savePage`, `listPages`, conversión PageDB/PageNodeDB ↔ PageDocument/PageNode.
+- `web/src/lib/pocketbaseEnv.ts` — variables de entorno del administrador.
+- `web/src/editor/canvas.tsx` — lienzo con autenticación, carga/guardado de página desde PocketBase, auto-guardar debounced (800 ms), selector de páginas, barra de herramientas con deshacer/rehacer.
+- `web/src/editor/store/pageStore.ts` — Zustand con `setPage`, `updateNode`, `addNode`, `removeNode`, `undo`, `redo`, `canUndo`, `canRedo`; cada cambio empuja al historial `pageHistory`.
+- `web/src/editor/store/history.ts` — pila de estados con undo/redo (máx. 50 entradas).
+- `web/src/editor/panels/ContentPanel.tsx` — edición de contenido (tag, texto, href, src, alt) por tipo de nodo.
+- `web/src/editor/panels/StylePanel.tsx` — edición de estilos (color fondo, color texto, tamaño fuente, padding, margen).
+- `web/src/editor/panels/AdvancedPanel.tsx` — clase CSS avanzada.
+- `web/src/renderer/PageRenderer.tsx` + componentes `Section`, `Row`, `Column`, `Text`, `Image`, `Button` — renderizador recursivo con `onSelect` para selección de nodos.
+- `web/src/types/page.ts` — tipos `PageDocument`, `PageNode`, `PageTheme`, `NodeStyles`, `Breakpoint`.
+
+🔧 **PocketBase local:** ejecutándose en `http://127.0.0.1:8090` con superusuario `admin@cafeelregio.local`, colecciones `pages`, `page_nodes`, `assets` y página de ejemplo `/inicio` con árbol de nodos (Sección → Contenedor → Fila → Columna → Texto + Botón).
+
+📋 **Pendiente:**
+
+- Conectar Craft.js para drag-and-drop real en el lienzo (actualmente solo selección y renderizado).
+- Agregar botón "Agregar elemento" en la barra de herramientas.
+- Persistir el nodo raíz (`root`) con ID local en `savePage`.
+
 ---
+
 ## 8. Notas de seguridad
 
 - `Registro/` contiene documentos de identidad (cédulas de Samuel y Kelly) y cupones bancarios. **Deben quedar excluidos de la web y de cualquier repositorio.**

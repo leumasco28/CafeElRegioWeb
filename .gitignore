@@ -6,6 +6,9 @@
 # Nequi). Nunca se sube al repositorio ni se publica en la web.
 Recursos/
 
+# PocketBase (binario descargado localmente, no se commitea)
+pocketbase/
+
 # Frontend (Vite + React)
 web/node_modules/
 web/dist/
@@ -16,6 +19,9 @@ web/*.local
 .env
 .env.*
 !.env.example
+
+# Script de setup de PocketBase (contiene credenciales de desarrollo)
+web/setup-pocketbase.js
 
 # Logs de gestores de paquetes
 npm-debug.log*

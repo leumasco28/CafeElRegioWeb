@@ -6,7 +6,10 @@ import { Text } from './components/Text';
 import { Image } from './components/Image';
 import { Button } from './components/Button';
 
-const components: Record<string, React.ComponentType<{ node: PageNode }>> = {
+const components: Record<
+  string,
+  React.ComponentType<{ node: PageNode; onSelect: (id: string) => void }>
+> = {
   Section,
   Row,
   Column,
@@ -15,14 +18,27 @@ const components: Record<string, React.ComponentType<{ node: PageNode }>> = {
   Button,
 };
 
-export function PageRenderer({ node }: { node: PageNode }) {
+export function PageRenderer({
+  node,
+  onSelect,
+}: {
+  node: PageNode;
+  onSelect: (id: string) => void;
+}) {
   const Component = components[node.type];
   if (!Component) {
     return (
-      <div data-node-id={node.id} data-node-type={node.type}>
+      <div
+        data-node-id={node.id}
+        data-node-type={node.type}
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelect(node.id);
+        }}
+      >
         [Componente no registrado: {node.type}]
       </div>
     );
   }
-  return <Component node={node} />;
+  return <Component node={node} onSelect={onSelect} />;
 }

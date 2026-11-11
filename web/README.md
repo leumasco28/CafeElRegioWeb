@@ -139,13 +139,25 @@ web/
 │  │  ├─ brands.ts               # Metadatos y logos de cada marca
 │  │  └─ catalog.ts              # Categorías y productos de muestra
 │  │  └─ eventTypes.ts           # Tipos de evento compartidos (Events y EventModal)
+│  ├─ editor/                    # Editor visual propio (Puck a medida con PocketBase)
+│  │  ├─ canvas.tsx              # Lienzo, autenticación, carga/guardado, auto-guardar
+│  │  ├─ panels/                 # ContentPanel, StylePanel, AdvancedPanel
+│  │  └─ store/                  # pageStore (Zustand + undo/redo), history (pila de estados)
 │  ├─ lib/
-│  │  └─ order.ts                # Utilidades de pedido (Fase 2, desactivadas)
+│  │  ├─ order.ts                # Utilidades de pedido (Fase 2, desactivadas)
+│  │  ├─ pocketbaseClient.ts     # Cliente PocketBase: pbSignIn, loadPage, savePage, listPages
+│  │  └─ pocketbaseEnv.ts        # Variables de entorno del administrador
+│  ├─ renderer/                  # Renderizador ligero (solo lee JSON y dibuja)
+│  │  ├─ PageRenderer.tsx        # Renderizador recursivo con selección de nodos
+│  │  ├─ resolveComponent.tsx    # Mapea tipo JSON → componente React
+│  │  ├─ components/             # Section, Row, Column, Text, Image, Button
+│  │  └─ blocks/                 # (pendiente) Hero, Catalog, EventForm, Navbar
 │  ├─ styles/
 │  │  ├─ tokens.css              # Colores, tipografía, espacios, bordes, tamaños
 │  │  └─ base.css                # Reset, contenedor, accesibilidad
 │  ├─ types/
-│  │  └─ css-modules.d.ts        # Declaraciones de tipos para CSS Modules
+│  │  ├─ css-modules.d.ts        # Declaraciones de tipos para CSS Modules
+│  │  └─ page.ts                 # PageDocument, PageNode, PageTheme, NodeStyles, Breakpoint
 │  ├─ test/                      # Pruebas automatizadas (Vitest + Testing Library)
 │  │  ├─ setup.ts                # matchMedia stub, cleanup y jest-dom matchers
 │  │  ├─ Header.test.tsx

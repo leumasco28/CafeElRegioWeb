@@ -2,9 +2,10 @@
 
 export interface ImageProps {
   node: PageNode;
+  onSelect: (id: string) => void;
 }
 
-export function Image({ node }: ImageProps) {
+export function Image({ node, onSelect }: ImageProps) {
   const style = node.styles?.desktop ?? {};
   const src = (node.props.src as string) || '';
   const alt = (node.props.alt as string) || '';
@@ -15,6 +16,10 @@ export function Image({ node }: ImageProps) {
       src={src}
       alt={alt}
       style={{ ...(style as React.CSSProperties), display: 'block' }}
+      onClick={(e) => {
+        e.stopPropagation();
+        onSelect(node.id);
+      }}
     />
   );
 }
