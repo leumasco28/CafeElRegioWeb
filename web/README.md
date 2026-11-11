@@ -140,7 +140,7 @@ web/
 │  │  └─ catalog.ts              # Categorías y productos de muestra
 │  │  └─ eventTypes.ts           # Tipos de evento compartidos (Events y EventModal)
 │  ├─ editor/                    # Editor visual propio (Puck a medida con PocketBase)
-│  │  ├─ canvas.tsx              # Lienzo, autenticación, carga/guardado, auto-guardar
+│  │  ├─ CraftEditor.tsx         # Wrapper de Craft.js: Editor, Frame, Element, useNode (drag-and-drop)\n│  │  ├─ canvas.tsx              # Lienzo, autenticación, carga/guardado, auto-guardar, botón Agregar elemento
 │  │  ├─ panels/                 # ContentPanel, StylePanel, AdvancedPanel
 │  │  └─ store/                  # pageStore (Zustand + undo/redo), history (pila de estados)
 │  ├─ lib/

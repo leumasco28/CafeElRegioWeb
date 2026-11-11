@@ -51,5 +51,13 @@ export default tseslint.config(
     rules: {
       "@typescript-eslint/no-unused-vars": "off",
     },
+  },
+  {
+    // Craft.js v0.2.12 tiene definiciones de TypeScript incompletas;
+    // se permiten tipos any en el editor visual para evitar ruido.
+    files: ["src/editor/**/*"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+    },
   }
 );

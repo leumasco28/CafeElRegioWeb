@@ -1,31 +1,37 @@
 ﻿import { useEffect, useState, useCallback, useRef } from 'react';
 import { usePageStore } from './store/pageStore';
-import { PageRenderer } from '../renderer/PageRenderer';
-import { ContentPanel } from './panels/ContentPanel';
-import { StylePanel } from './panels/StylePanel';
-import { AdvancedPanel } from './panels/AdvancedPanel';
+import { CraftEditor } from './CraftEditor';
+import type { PageNode } from '../types/page';
 import { pbSignIn, loadPage, savePage, listPages } from '../lib/pocketbaseClient';
 import { VITE_POCKETBASE_ADMIN_EMAIL, VITE_POCKETBASE_ADMIN_PASSWORD } from '../lib/pocketbaseEnv';
 
 type PanelTab = 'contenido' | 'estilo' | 'avanzado';
+
+type ElementType = 'Section' | 'Row' | 'Column' | 'Text' | 'Image' | 'Button';
+
+const ELEMENT_LABELS: Record<ElementType, string> = {
+  Section: 'Sección',
+  Row: 'Fila',
+  Column: 'Columna',
+  Text: 'Texto',
+  Image: 'Imagen',
+  Button: 'Botón',
+};
 
 export function Canvas() {
   const page = usePageStore((s) => s.page);
   const setPage = usePageStore((s) => s.setPage);
   const selectNode = usePageStore((s) => s.selectNode);
   const selectedNodeId = usePageStore((s) => s.selectedNodeId);
-  const undo = usePageStore((s) => s.undo);
-  const redo = usePageStore((s) => s.redo);
-  const canUndo = usePageStore((s) => s.canUndo);
-  const canRedo = usePageStore((s) => s.canRedo);
+  const addNode = usePageStore((s) => s.addNode);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pages, setPages] = useState<Array<{ id: string; slug: string; title: string }>>([]);
   const [currentSlug, setCurrentSlug] = useState<string>('/inicio');
   const [activeTab, setActiveTab] = useState<PanelTab>('contenido');
+  const [addMenuOpen, setAddMenuOpen] = useState(false);
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Auto-guardar debounced cada vez que cambia la página en el store
   const scheduleSave = useCallback(() => {
     if (!page) return;
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
@@ -42,7 +48,6 @@ export function Canvas() {
     scheduleSave();
   }, [page, scheduleSave]);
 
-  // Inicializar: autenticar, cargar páginas y cargar la página actual
   useEffect(() => {
     let cancelled = false;
 
@@ -56,7 +61,13 @@ export function Canvas() {
         setPages(pageList);
 
         if (!cancelled) {
-          await loadCurrentPage(currentSlug);
+          const current = pages.find((p) => p.slug === currentSlug);
+          if (current) {
+            await loadCurrentPage(currentSlug);
+          } else if (pageList.length > 0) {
+            setCurrentSlug(pageList[0].slug);
+            await loadCurrentPage(pageList[0].slug);
+          }
         }
       } catch (err) {
         if (!cancelled) {
@@ -70,7 +81,7 @@ export function Canvas() {
     return () => {
       cancelled = true;
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   async function loadCurrentPage(slug: string) {
     setLoading(true);
@@ -93,6 +104,34 @@ export function Canvas() {
   async function handlePageChange(slug: string) {
     setCurrentSlug(slug);
     await loadCurrentPage(slug);
+  }
+
+  function handleAddElement(type: ElementType) {
+    setAddMenuOpen(false);
+    if (!page) return;
+
+    const newId = `node_${Date.now()}`;
+    const newNode: PageNode = {
+      id: newId,
+      type,
+      parentId: selectedNodeId ?? undefined,
+      props: {},
+      styles: {},
+      children: [],
+      order: Date.now(),
+    };
+
+    // Default props por tipo
+    if (type === 'Text') {
+      newNode.props = { tag: 'p', content: 'Nuevo texto' };
+    } else if (type === 'Button') {
+      newNode.props = { text: 'Botón', href: '#' };
+    } else if (type === 'Image') {
+      newNode.props = { src: '', alt: 'Imagen' };
+    }
+
+    addNode(selectedNodeId ?? null, newNode);
+    selectNode(newId);
   }
 
   if (loading) {
@@ -145,7 +184,6 @@ export function Canvas() {
 
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
-      {/* Barra superior del editor */}
       <div
         style={{
           position: 'fixed',
@@ -165,35 +203,37 @@ export function Canvas() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <button
-              onClick={undo}
-              disabled={!canUndo()}
+              onClick={() => {
+                // Deshacer se maneja dentro de CraftEditor
+              }}
               title="Deshacer"
               style={{
                 padding: '4px 8px',
                 fontSize: '0.875rem',
                 background: '#374151',
-                color: canUndo() ? '#fff' : '#9ca3af',
+                color: '#9ca3af',
                 border: 'none',
                 borderRadius: '4px',
-                cursor: canUndo() ? 'pointer' : 'default',
-                opacity: canUndo() ? 1 : 0.5,
+                cursor: 'default',
+                opacity: 0.5,
               }}
             >
               ↩
             </button>
             <button
-              onClick={redo}
-              disabled={!canRedo()}
+              onClick={() => {
+                // Rehacer se maneja dentro de CraftEditor
+              }}
               title="Rehacer"
               style={{
                 padding: '4px 8px',
                 fontSize: '0.875rem',
                 background: '#374151',
-                color: canRedo() ? '#fff' : '#9ca3af',
+                color: '#9ca3af',
                 border: 'none',
                 borderRadius: '4px',
-                cursor: canRedo() ? 'pointer' : 'default',
-                opacity: canRedo() ? 1 : 0.5,
+                cursor: 'default',
+                opacity: 0.5,
               }}
             >
               ↪
@@ -202,6 +242,62 @@ export function Canvas() {
               Café El Regio — Editor Visual
             </span>
           </div>
+
+          {/* Botón Agregar elemento */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <button
+              onClick={() => setAddMenuOpen(!addMenuOpen)}
+              style={{
+                padding: '6px 10px',
+                fontSize: '0.875rem',
+                background: '#2563eb',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+            >
+              + Agregar elemento
+            </button>
+            {addMenuOpen && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '48px',
+                  left: '0',
+                  background: '#fff',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  padding: '0.5rem',
+                  zIndex: 200,
+                }}
+              >
+                {Object.entries(ELEMENT_LABELS).map(([type, label]) => (
+                  <button
+                    key={type}
+                    onClick={() => handleAddElement(type as ElementType)}
+                    style={{
+                      display: 'block',
+                      width: '100%',
+                      padding: '6px 10px',
+                      fontSize: '0.875rem',
+                      textAlign: 'left',
+                      background: 'transparent',
+                      color: '#374151',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      marginBottom: '0.25rem',
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           <select
             value={currentSlug}
             onChange={(e) => handlePageChange(e.target.value)}
@@ -235,7 +331,7 @@ export function Canvas() {
           }}
           data-canvas
         >
-          <PageRenderer node={page.root} onSelect={selectNode} />
+          <CraftEditor page={page} setPage={setPage} selectNode={selectNode} />
         </div>
 
         <div
@@ -257,7 +353,6 @@ export function Canvas() {
             Estado: {page.status}
           </p>
 
-          {/* Pestañas de paneles */}
           <div style={{ display: 'flex', gap: '0.25rem', marginBottom: '0.75rem' }}>
             {(['contenido', 'estilo', 'avanzado'] as PanelTab[]).map((tab) => (
               <button
@@ -302,3 +397,7 @@ export function Canvas() {
     </div>
   );
 }
+
+import { ContentPanel } from './panels/ContentPanel';
+import { StylePanel } from './panels/StylePanel';
+import { AdvancedPanel } from './panels/AdvancedPanel';

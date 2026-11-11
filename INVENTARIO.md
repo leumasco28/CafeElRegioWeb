@@ -275,7 +275,8 @@ ode.
 
 `src/
   editor/            # Editor visual (solo en /admin)
-    canvas.tsx       # Lienzo con Craft.js, selección, edición inline
+    CraftEditor.tsx    # Wrapper de Craft.js: Editor, Frame, Element, useNode (drag-and-drop)
+    canvas.tsx         # Lienzo con Craft.js, selección, edición inline, botón Agregar elemento
     panels/          # Contenido, Estilo, Avanzado
     store/           # Zustand: árbol JSON, historial undo/redo
   renderer/          # Renderizador ligero (solo lee JSON y dibuja)
@@ -301,7 +302,8 @@ ode.
 
 - `web/src/lib/pocketbaseClient.ts` — cliente PocketBase tipado, `pbSignIn`, `loadPage`, `savePage`, `listPages`, conversión PageDB/PageNodeDB ↔ PageDocument/PageNode.
 - `web/src/lib/pocketbaseEnv.ts` — variables de entorno del administrador.
-- `web/src/editor/canvas.tsx` — lienzo con autenticación, carga/guardado de página desde PocketBase, auto-guardar debounced (800 ms), selector de páginas, barra de herramientas con deshacer/rehacer.
+- `web/src/editor/CraftEditor.tsx` — wrapper de Craft.js (`Editor`, `Frame`, `Element`, `useNode`) que habilita arrastre y soltar real sobre el lienzo; sincroniza cambios con Zustand + PocketBase vía `onNodesChange`.
+- `web/src/editor/canvas.tsx` — lienzo con autenticación, carga/guardado de página desde PocketBase, auto-guardar debounced (800 ms), selector de páginas, botón "+ Agregar elemento" y barra de herramientas con deshacer/rehacer.
 - `web/src/editor/store/pageStore.ts` — Zustand con `setPage`, `updateNode`, `addNode`, `removeNode`, `undo`, `redo`, `canUndo`, `canRedo`; cada cambio empuja al historial `pageHistory`.
 - `web/src/editor/store/history.ts` — pila de estados con undo/redo (máx. 50 entradas).
 - `web/src/editor/panels/ContentPanel.tsx` — edición de contenido (tag, texto, href, src, alt) por tipo de nodo.
@@ -312,11 +314,17 @@ ode.
 
 🔧 **PocketBase local:** ejecutándose en `http://127.0.0.1:8090` con superusuario `admin@cafeelregio.local`, colecciones `pages`, `page_nodes`, `assets` y página de ejemplo `/inicio` con árbol de nodos (Sección → Contenedor → Fila → Columna → Texto + Botón).
 
-📋 **Pendiente:**
+✅ **Implementado (arrastrar y soltar):**
 
-- Conectar Craft.js para drag-and-drop real en el lienzo (actualmente solo selección y renderizado).
-- Agregar botón "Agregar elemento" en la barra de herramientas.
-- Persistir el nodo raíz (`root`) con ID local en `savePage`.
+- `web/src/editor/CraftEditor.tsx` — wrapper de Craft.js `<Editor>` con `resolver`, `onRender`, `Frame` y `Element`; componentes `CraftSection`, `CraftRow`, `CraftColumn`, `CraftText`, `CraftImage`, `CraftButton` usando `useNode()` y `connectors.connect()` para drag-and-drop real.
+- `web/src/editor/canvas.tsx` — botón "+ Agregar elemento" en la barra de herramientas con selector de tipos (Sección, Fila, Columna, Texto, Imagen, Botón) que inserta nodos en el árbol y los selecciona automáticamente.
+- `web/src/lib/pocketbaseClient.ts` — `savePage` ahora persiste el nodo raíz (`root`) como un nodo más en la colección `page_nodes` de PocketBase.
+
+📋 **Pendiente (mejoras futuras del editor):**
+
+- Paneles de propiedades conectados a los nodos seleccionados de Craft.js (actualmente los paneles leen de Zustand pero los cambios en el lienzo van a `onNodesChange`).
+- Edición inline (doble clic sobre texto para editar directamente en el lienzo).
+- Selector de breakpoints (Desktop/Tablet/Mobile) en el lienzo.
 
 ---
 

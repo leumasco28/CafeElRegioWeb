@@ -180,7 +180,7 @@ export async function savePage(document: PageDocument): Promise<void> {
     });
   }
 
-  // 2. Recopilar todos los nodos del árbol por niveles
+  // 2. Recopilar todos los nodos del árbol por niveles (incluyendo root)
   const levels: PageNode[][] = [[document.root]];
   let levelIdx = 0;
   while (levelIdx < levels.length) {
@@ -195,7 +195,7 @@ export async function savePage(document: PageDocument): Promise<void> {
   // 3. Mapear id local -> id de PocketBase para asignar parentId correctamente
   const pbIdMap = new Map<string, string>(); // local id -> pb id
 
-  // Eliminar nodos existentes que ya no están en el árbol
+  // Eliminar nodos existentes que ya no están en el árbol (excluye 'root' que se maneja aparte)
   const existing = await pb.collection('page_nodes').getList<PageNodeDB>(1, 500, {
     filter: `page = "${pageDb.id}"`,
   });
@@ -211,16 +211,22 @@ export async function savePage(document: PageDocument): Promise<void> {
       .map((n) => pb.collection('page_nodes').delete(n.id))
   );
 
-  // 4. Guardar nodo por nodo, nivel por nivel
+  // 4. Guardar nodo por nodo, nivel por nivel (root incluido en nivel 0)
   for (const level of levels) {
     await Promise.all(
       level.map(async (node) => {
-        const parentId = node.parentId ? (pbIdMap.get(node.parentId) ?? null) : null;
+        // El nodo root no tiene parentId real; sus hijos sí apuntan a root
+        const isRoot = node.id === 'root';
+        const parentId = isRoot
+          ? null
+          : node.parentId
+            ? (pbIdMap.get(node.parentId) ?? null)
+            : null;
 
         const payload = nodeToDbPayload(node, pageDb.id, parentId);
 
         // Si el nodo ya tiene un ID de PocketBase (no es local), actualizar
-        const isLocalId = node.id === 'root' || node.id.startsWith('local_');
+        const isLocalId = node.id.startsWith('local_');
         if (!isLocalId) {
           try {
             await pb.collection('page_nodes').update(node.id, payload);
