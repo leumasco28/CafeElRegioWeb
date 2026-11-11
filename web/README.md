@@ -365,3 +365,26 @@ enderer/ no depende de editor/: la página publicada solo importa el renderizado
 - No subir este proyecto a GitHub ni publicarlo sin autorización.
 - Para cambiar textos generales, editar `src/content/site.ts`; para la identidad de cada
   marca, `src/content/brands.ts` y `tokens.css`.
+
+## Routing y editor visual
+
+El frontend usa `react-router-dom` con dos rutas definidas en `src/App.tsx`:
+
+- **`/`** â€” sitio estÃ¡tico pÃºblico (Hero, BrandSplit, CatalogPreview, Events, HowToOrder).
+- **`/editor/:slug`** â€” editor visual propio (Canvas con Craft.js + drag-and-drop) que carga y guarda pÃ¡ginas desde PocketBase. Ejemplo: `http://localhost:5173/editor/inicio`.
+
+Para entrar al editor de una pÃ¡gina especÃ­fica, navega a `/editor/<slug>` (por ejemplo `/editor/inicio`).
+
+### Script de setup de PocketBase
+
+`web/setup-pocketbase.js` automatiza la creaciÃ³n del superusuario, las colecciones (`pages`, `page_nodes`, `assets`) y la pÃ¡gina de ejemplo `/inicio` con nodos de ejemplo. Ejecutar con PocketBase corriendo en `http://127.0.0.1:8090`:
+
+```bash
+node setup-pocketbase.js
+```
+
+Credenciales del superusuario:
+
+- Email: `admin@cafeelregio.local`
+- ContraseÃ±a: `admin12345`
+- Panel admin: `http://127.0.0.1:8090/_/`

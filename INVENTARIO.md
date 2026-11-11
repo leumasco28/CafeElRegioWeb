@@ -314,6 +314,14 @@ ode.
 
 🔧 **PocketBase local:** ejecutándose en `http://127.0.0.1:8090` con superusuario `admin@cafeelregio.local`, colecciones `pages`, `page_nodes`, `assets` y página de ejemplo `/inicio` con árbol de nodos (Sección → Contenedor → Fila → Columna → Texto + Botón).
 
+**Script de setup:** web/setup-pocketbase.js crea el superusuario, las colecciones y la p�gina /inicio con nodos de ejemplo ejecutando
+ode setup-pocketbase.js.
+**Routing del frontend:** web/src/App.tsx usa
+eact-router-dom con dos rutas:
+
+- / — sitio estático público (Hero, BrandSplit, CatalogPreview, Events, HowToOrder).
+- /editor/:slug — editor visual (Canvas) que carga la página desde PocketBase por slug. Ejemplo: http://localhost:5173/editor/inicio.
+
 ✅ **Implementado (arrastrar y soltar):**
 
 - `web/src/editor/CraftEditor.tsx` — wrapper de Craft.js `<Editor>` con `resolver`, `onRender`, `Frame` y `Element`; componentes `CraftSection`, `CraftRow`, `CraftColumn`, `CraftText`, `CraftImage`, `CraftButton` usando `useNode()` y `connectors.connect()` para drag-and-drop real.

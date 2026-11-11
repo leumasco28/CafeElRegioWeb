@@ -4,21 +4,28 @@ import { CraftEditor } from './CraftEditor';
 import type { PageNode } from '../types/page';
 import { pbSignIn, loadPage, savePage, listPages } from '../lib/pocketbaseClient';
 import { VITE_POCKETBASE_ADMIN_EMAIL, VITE_POCKETBASE_ADMIN_PASSWORD } from '../lib/pocketbaseEnv';
+import { ContentPanel } from './panels/ContentPanel';
+import { StylePanel } from './panels/StylePanel';
+import { AdvancedPanel } from './panels/AdvancedPanel';
 
 type PanelTab = 'contenido' | 'estilo' | 'avanzado';
 
 type ElementType = 'Section' | 'Row' | 'Column' | 'Text' | 'Image' | 'Button';
 
 const ELEMENT_LABELS: Record<ElementType, string> = {
-  Section: 'Sección',
+  Section: 'Secci\u00f3n',
   Row: 'Fila',
   Column: 'Columna',
   Text: 'Texto',
   Image: 'Imagen',
-  Button: 'Botón',
+  Button: 'Bot\u00f3n',
 };
 
-export function Canvas() {
+interface CanvasProps {
+  initialSlug?: string;
+}
+
+export function Canvas({ initialSlug = '/inicio' }: CanvasProps) {
   const page = usePageStore((s) => s.page);
   const setPage = usePageStore((s) => s.setPage);
   const selectNode = usePageStore((s) => s.selectNode);
@@ -27,7 +34,7 @@ export function Canvas() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pages, setPages] = useState<Array<{ id: string; slug: string; title: string }>>([]);
-  const [currentSlug, setCurrentSlug] = useState<string>('/inicio');
+  const [currentSlug, setCurrentSlug] = useState<string>(initialSlug);
   const [activeTab, setActiveTab] = useState<PanelTab>('contenido');
   const [addMenuOpen, setAddMenuOpen] = useState(false);
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -39,7 +46,7 @@ export function Canvas() {
       try {
         await savePage(page);
       } catch (err) {
-        console.error('Error guardando página:', err);
+        console.error('Error guardando p\u00e1gina:', err);
       }
     }, 800);
   }, [page]);
@@ -92,10 +99,10 @@ export function Canvas() {
         setPage(doc);
         selectNode(null);
       } else {
-        setError(`No se encontró la página "${slug}"`);
+        setError(`No se encontr\u00f3 la p\u00e1gina "${slug}"`);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error cargando la página');
+      setError(err instanceof Error ? err.message : 'Error cargando la p\u00e1gina');
     } finally {
       setLoading(false);
     }
@@ -121,11 +128,10 @@ export function Canvas() {
       order: Date.now(),
     };
 
-    // Default props por tipo
     if (type === 'Text') {
       newNode.props = { tag: 'p', content: 'Nuevo texto' };
     } else if (type === 'Button') {
-      newNode.props = { text: 'Botón', href: '#' };
+      newNode.props = { text: 'Bot\u00f3n', href: '#' };
     } else if (type === 'Image') {
       newNode.props = { src: '', alt: 'Imagen' };
     }
@@ -171,7 +177,7 @@ export function Canvas() {
           color: '#6b7280',
         }}
       >
-        No hay página cargada.
+        No hay p\u00e1gina cargada.
       </div>
     );
   }
@@ -218,7 +224,7 @@ export function Canvas() {
                 opacity: 0.5,
               }}
             >
-              ↩
+              ?
             </button>
             <button
               onClick={() => {
@@ -236,14 +242,14 @@ export function Canvas() {
                 opacity: 0.5,
               }}
             >
-              ↪
+              ?
             </button>
             <span style={{ fontWeight: 600, marginLeft: '0.5rem' }}>
-              Café El Regio — Editor Visual
+              Caf\u00e9 El Regio - Editor Visual
             </span>
           </div>
 
-          {/* Botón Agregar elemento */}
+          {/* Bot\u00f3n Agregar elemento */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <button
               onClick={() => setAddMenuOpen(!addMenuOpen)}
@@ -317,7 +323,7 @@ export function Canvas() {
           </select>
         </div>
         <div style={{ fontSize: '0.875rem', opacity: 0.8 }}>
-          Página: {page.title} · Estado: {page.status}
+          P\u00e1gina: {page.title} \u00bf Estado: {page.status}
         </div>
       </div>
 
@@ -347,7 +353,7 @@ export function Canvas() {
         >
           <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem' }}>Editor Visual</h3>
           <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
-            Página: {page.title} ({page.slug})
+            P\u00e1gina: {page.title} ({page.slug})
           </p>
           <p style={{ margin: '0 0 1rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
             Estado: {page.status}
@@ -390,14 +396,10 @@ export function Canvas() {
           )}
 
           <div style={{ marginTop: '1rem', fontSize: '0.75rem', color: '#9ca3af' }}>
-            Cambios se guardan automáticamente en PocketBase
+            Cambios se guardan autom\u00e1ticamente en PocketBase
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-import { ContentPanel } from './panels/ContentPanel';
-import { StylePanel } from './panels/StylePanel';
-import { AdvancedPanel } from './panels/AdvancedPanel';
