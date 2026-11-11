@@ -1,4 +1,4 @@
-# Café El Regio · KMuffis — Tienda web
+﻿# Café El Regio · KMuffis — Tienda web
 
 Andamiaje de la tienda web de **Café El Regio** y **KMuffis**, construido con React + Vite + TypeScript.
 Esta es la **Fase 1**: estructura, identidad visual y portada navegable.
@@ -290,6 +290,46 @@ se renderiza ningún enlace a WhatsApp. La interfaz solo explica cómo funcionar
 - Imágenes con `width`/`height` para evitar saltos de layout y `loading="lazy"` salvo en la
   portada.
 - Sin dependencias de UI: React, ReactDOM, Vite y el plugin de React.
+
+---
+
+## Editor visual propio (Puck a medida) con PocketBase
+
+En lugar de usar un CMS de terceros ni servicios en la nube, se construirá un **editor visual propio** sobre React + TypeScript que permita maquetar páginas, cambiar textos e imágenes y publicar sin tocar código.
+
+### Motor de edición
+
+- **Craft.js**: arrastre y soltar, anidamiento de componentes y selección sobre un árbol de nodos JSON.
+- **Zustand**: estado del árbol, historial undo/redo y paneles de propiedades (Contenido / Estilo / Avanzado).
+- **Tailwind CSS**: controles visuales de estilo (colores, padding, márgenes, flex/grid).
+
+### Almacenamiento: PocketBase
+
+Se eligió **PocketBase** (único ejecutable, sin servidor externo) porque incluye base de datos, API REST, autenticación, almacenamiento de archivos y panel de administración web, con SDK oficial para TypeScript/React. El árbol JSON de cada página se guarda en un campo JSON y se consume desde el frontend sin redeploy.
+
+Colecciones planeadas en PocketBase:
+
+- **pages**: itle, slug (único), status (draft / published), heme (JSON).
+- **page_nodes**: page, parent (opcional), ype, props (JSON), styles (JSON por breakpoint), order.
+- **ssets**: ile, url, relación opcional a página o nodo.
+
+### Estructura de carpetas (en src/)
+
+`src/
+  editor/            # Editor visual (solo en /admin)
+    canvas.tsx       # Lienzo con Craft.js, selección, edición inline
+    panels/          # Contenido, Estilo, Avanzado
+    store/           # Zustand: árbol JSON, historial undo/redo
+  renderer/          # Renderizador ligero (solo lee JSON y dibuja)
+    PageRenderer.tsx
+    components/      # Section, Row, Column, Text, Image, Button
+    blocks/          # Hero, Catalog, EventForm, Navbar
+    resolveComponent.tsx  # Mapea tipo JSON -> componente React
+  types/             # page.ts, component.ts, breakpoint.ts, theme.ts
+  lib/               # pocketbaseClient.ts`
+
+El
+enderer/ no depende de editor/: la página publicada solo importa el renderizador y el JSON, sin paneles ni controles de arrastre.
 
 ---
 

@@ -1,4 +1,4 @@
-# INVENTARIO DE RECURSOS — Café El Regio / KMuffis
+﻿# INVENTARIO DE RECURSOS — Café El Regio / KMuffis
 
 **Borrador v0.1 — 2026-10-25.** Estado: solo inspección. **No se modificó, movió ni eliminó ningún archivo de `Recursos`.**
 
@@ -240,6 +240,65 @@ Fase 1 al 100% completa. Listo para pasar a la Fase 2 (confirmar precios del cat
 
 ---
 
+
+---
+
+## 8. Editor visual propio (Puck a medida) con PocketBase
+
+En lugar de usar un CMS de terceros (WordPress headless, Strapi, Sanity) ni servicios en la nube, el sitio contará con un **editor visual propio** construido sobre React + TypeScript que permite al dueño maquetar páginas, cambiar textos e imágenes y publicar sin tocar código.
+
+### Motor de edición
+
+- **Craft.js** como motor base: resuelve el arrastre y soltar (drag-and-drop), el anidamiento de componentes (contenedor dentro de contenedor, columnas, botones dentro de tarjetas) y la selección de elementos sobre un árbol de nodos JSON.
+- **Zustand** para el estado del árbol, el historial undo/redo y los paneles de propiedades (Contenido / Estilo / Avanzado).
+- **Tailwind CSS** (o variables CSS por breakpoint) para los controles visuales de estilo (colores, padding, márgenes, flex/grid).
+
+### Almacenamiento: PocketBase
+
+Se eligió **PocketBase** sobre SQLite solo y Supabase CLI porque:
+
+- Es **un solo ejecutable** (sin instalar servidores, sin Docker, sin terceros en la nube).
+- Incluye **base de datos, API REST, autenticación, almacenamiento de archivos y panel de administración web**.
+- Tiene **SDK oficial para TypeScript/React** (pocketbase).
+- Guarda el árbol JSON de cada página en un campo de tipo JSON, ideal para el AST del editor.
+- Permite edición multiusuario, borrador vs publicado y publicación sin redeploy.
+
+### Modelo de datos (colecciones en PocketBase)
+
+**pages**: 	itle, slug (único: /inicio, /carta), status (draft / published), 	heme (JSON con colores y tipografías globales).
+
+**page_nodes** (árbol de la página): page (relación), parent (relación opcional para anidamiento), 	ype (Section, Container, Row, Column, Text, Image, Button, Hero, Catalog, EventForm...), props (JSON), styles (JSON por breakpoint: desktop, 	ablet, mobile), order (número para ordenar hermanos).
+
+**ssets**: ile (imagen subida), url (generada por PocketBase), relación opcional a page o 
+ode.
+
+### Estructura de carpetas (en web/src/)
+
+`
+src/
+  editor/            # Editor visual (solo en /admin)
+    canvas.tsx       # Lienzo con Craft.js, selección, edición inline
+    panels/          # Contenido, Estilo, Avanzado
+    store/           # Zustand: árbol JSON, historial undo/redo
+  renderer/          # Renderizador ligero (solo lee JSON y dibuja)
+    PageRenderer.tsx
+    components/      # Section, Row, Column, Text, Image, Button
+    blocks/          # Hero, Catalog, EventForm, Navbar
+    resolveComponent.tsx  # Mapea tipo JSON -> componente React
+  types/             # page.ts, component.ts, breakpoint.ts, theme.ts
+  lib/               # pocketbaseClient.ts
+`
+
+### Capas del sistema
+
+1. Motor de edición (Craft.js + Zustand): árbol en memoria, selección, arrastre, undo/redo.
+2. Panel de propiedades: pestañas Contenido / Estilo / Avanzado.
+3. Sistema responsive: estilos por breakpoint, selector Desktop/Tablet/Mobile en el lienzo.
+4. Tokens globales: paleta y tipografía en 	heme del JSON.
+5. Renderizador limpio: PageRenderer recursivo que dibuja la página publicada (sin paneles de edición).
+6. Edición inline: doble clic sobre textos para editarlos directamente en el lienzo.
+
+---
 ## 8. Notas de seguridad
 
 - `Registro/` contiene documentos de identidad (cédulas de Samuel y Kelly) y cupones bancarios. **Deben quedar excluidos de la web y de cualquier repositorio.**
