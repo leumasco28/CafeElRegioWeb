@@ -294,11 +294,9 @@ export function CraftEditor({ page, setPage, selectNode }: any) {
         </div>
       )}
     >
-      <Frame data={serialized as any}>
-        {Object.keys(serialized).map((nodeId) => (
-          <Element key={nodeId} id={nodeId} />
-        ))}
-      </Frame>
+      <div style={{ height: '100%', width: '100%' }}>
+        <Frame data={serialized as any}>{serialized.root ? <Element id="root" /> : null}</Frame>
+      </div>
     </Editor>
   );
 }
