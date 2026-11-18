@@ -89,11 +89,13 @@ npm run build         # build de producción (Vite)
 
 ## Pruebas automatizadas (Vitest + Testing Library)
 
-Se agregó Vitest con entorno `jsdom`, `@testing-library/react` y `@testing-library/jest-dom` (vía matchers de `vitest`). Tres suites cubren las piezas críticas de la Fase 1:
+Vitest con entorno `jsdom`, `@testing-library/react` y `@testing-library/jest-dom` (vía matchers de `vitest`). Cinco suites cubren las piezas críticas del sitio:
 
-- **`Header.test.tsx`**: renderiza el nombre del sitio y los 5 enlaces de navegación; abre y cierra el menú móvil con el botón de hamburguesa (y lo cierra al seleccionar un enlace).
+- **`Header.test.tsx`**: renderiza el nombre del sitio y los 5 enlaces de navegación; abre y cierra el menú móvil con el botón de hamburguesa (y lo cierra al seleccionar un enlace); muestra el botón del carrito.
 - **`CatalogPreview.test.tsx`**: renderiza el contador de productos de muestra, muestra "Precio por confirmar" en productos sin precio y filtra la carta por marca.
 - **`EventModal.test.tsx`**: valida campos obligatorios (nombre ≥ 2, teléfono ≥ 7 dígitos, email válido, tipo de evento, casilla de privacidad), verifica que no se envíe con errores y que el envío válido llame a `onSubmit` sin incluir el campo `privacy`; y verifica que el botón Cerrar llame a `onClose`.
+- **`CartContext.test.tsx`**: agrega productos y acumula cantidades, calcula el total con precios del catálogo, cambia cantidades, elimina ítems, vacía el carrito, persiste en `localStorage` (`cafe_el_regio_cart`) y descarta datos corruptos o entradas inválidas guardadas.
+- **`CartDrawer.test.tsx`**: estado cerrado y estado vacío, listado de ítems con total, controles de cantidad y borrado, cierre del cajón y generación del deep-link `wa.me/573015150059?text=...` con el pedido (que además vacía el carrito).
 
 Comandos (ejecutar desde `web/`):
 
@@ -165,7 +167,9 @@ web/
 │  │  ├─ setup.ts                # matchMedia stub, cleanup y jest-dom matchers
 │  │  ├─ Header.test.tsx
 │  │  ├─ CatalogPreview.test.tsx
-│  │  └─ EventModal.test.tsx
+│  │  ├─ EventModal.test.tsx
+│  │  ├─ CartContext.test.tsx
+│  │  └─ CartDrawer.test.tsx
 │  ├─ App.tsx
 │  └─ main.tsx
 ├─ index.html

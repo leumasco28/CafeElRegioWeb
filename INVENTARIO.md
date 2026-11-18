@@ -209,7 +209,7 @@ Inventario terminado; `Recursos/` intacto. Sin git, sin dependencias, sin ejecut
 - ✅ `tsc --noEmit` y `npm run build` pasan sin errores.
 - ✅ Checkbox de privacidad en `EventModal.tsx` corregido: ahora es controlado y se puede desmarcar.
 - ✅ ESLint + Prettier + husky (completado 2026-11-10): ESLint con flat config en `eslint.config.js` (reglas TS + React Hooks + React Refresh), Prettier (`.prettierrc`: `printWidth: 100`, comillas simples, 2 espacios), Husky con pre-commit ejecutando `lint-staged` sobre `web/`. Scripts: `npm run lint`, `npm run lint:fix`, `npm run format`, `npm run format:check`.
-- ✅ Vitest + React Testing Library: 3 suites de pruebas (Header, CatalogPreview, EventModal), 10 pruebas pasando. Configuración en `vite.config.js` (environment jsdom, setupFiles `test/setup.ts`) y scripts `npm run test` / `npm run test:run`. Commit `d1045ad`.
+- ✅ Vitest + React Testing Library: 3 suites de pruebas (Header, CatalogPreview, EventModal), 11 pruebas pasando. Configuración en `vite.config.js` (environment jsdom, setupFiles `test/setup.ts`) y scripts `npm run test` / `npm run test:run`. Commit `d1045ad`.
 - ✅ Extraer `EVENT_TYPES` a archivo compartido (`src/content/eventTypes.ts`) entre `Events.tsx` y `EventModal.tsx`. Commit `d1045ad`.
 
 Fase 1 al 100% completa. Listo para pasar a la Fase 2 (confirmar precios del catálogo y activar pedidos por WhatsApp).
@@ -221,6 +221,7 @@ Fase 1 al 100% completa. Listo para pasar a la Fase 2 (confirmar precios del cat
 - ✅ Carrito con React Context + `localStorage` (`web/src/context/CartContext.tsx`), cajón de carrito (`web/src/components/ui/CartDrawer.tsx`) y botón de carrito en el header.
 - ✅ Pedidos por WhatsApp activados (`orders.enabled: true`): el carrito y el formulario de eventos generan el deep-link `wa.me/573015150059?text=...`.
 - ✅ Corrección de caracteres con tilde que se mostraban dañados (mojibake) en Header, CatalogPreview, CartDrawer, HowToOrder, App y Header.module.css.
+- ✅ Pruebas del carrito: `CartContext.test.tsx` (10 casos: alta, acumulación, total, cantidades, borrado, vaciado, persistencia y datos corruptos) y `CartDrawer.test.tsx` (9 casos: abierto/cerrado, vacío, listado, controles, deep-link de WhatsApp y vaciado). Total del proyecto: 5 suites y 30 pruebas.
 - ⬜ Confirmar precios de métodos manuales, Sandwich Regio y la repostería restante (muffins de avena y vainilla/chocolate, alfajores, porción de torta).
 - ⬜ Seleccionar y optimizar 15–25 imágenes (logo SVG, logos KMuffis, fotos de producto y de eventos) como WebP.
 - ⬜ Página de eventos con las 8+ fechas de `Regio-kmfs/`.

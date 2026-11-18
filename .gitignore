@@ -8,9 +8,12 @@ Recursos/
 
 # PocketBase (binario descargado localmente, no se commitea)
 pocketbase/
+pocketbase_data/
+
+# Dependencias (raíz del repo y frontend)
+node_modules/
 
 # Frontend (Vite + React)
-web/node_modules/
 web/dist/
 web/dist-ssr/
 web/*.local
