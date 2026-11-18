@@ -42,7 +42,7 @@ export const categoriesById: CategoriesById = Object.fromEntries(
 );
 
 export const catalogNote =
-  'Carta de muestra. Los productos sin precio están pendientes de confirmación con el negocio.';
+  'Carta con precios confirmados por el negocio. Los productos sin precio están pendientes de confirmación.';
 
 const product = (
   id: string,
@@ -110,7 +110,7 @@ export const products: Product[] = [
   product('sandwich', 'regio', 'salados', 'Sandwich Regio', 'Pollo, Regio o mixto.'),
   product('dedito-queso', 'regio', 'salados', 'Deditos de queso', 'Horneado de queso.', 4000),
 
-  // KMuffis (selección por confirmar)
+  // KMuffis
   product(
     'muffin-avena',
     'kmuffis',
@@ -125,7 +125,30 @@ export const products: Product[] = [
     'Muffin de vainilla y chocolate',
     'Vainilla con chips y centro de chocolate.'
   ),
-  product('brownie', 'kmuffis', 'reposteria', 'Brownie', 'Porción de chocolate, textura densa.'),
+  product(
+    'muffin-vino',
+    'kmuffis',
+    'reposteria',
+    'Muffin de vino',
+    'Muffin individual de vino.',
+    9000
+  ),
+  product(
+    'torta-vino',
+    'kmuffis',
+    'reposteria',
+    'Torta individual de vino',
+    'Porción individual de torta de vino.',
+    9000
+  ),
+  product(
+    'brownie',
+    'kmuffis',
+    'reposteria',
+    'Brownie',
+    'Porción de chocolate, textura densa.',
+    6000
+  ),
   product(
     'alfajor-tradicional',
     'kmuffis',
@@ -151,8 +174,33 @@ export const products: Product[] = [
     'galleta-ny',
     'kmuffis',
     'reposteria',
-    'Galleta estilo Nueva York',
-    'Galleta de banano rellena de chocolate.'
+    'Galleta grande 200 g',
+    'Galleta grande de 200 g con centro de chocolate.',
+    8000
+  ),
+  product(
+    'galletas-navidenas',
+    'kmuffis',
+    'reposteria',
+    'Galletas navideñas · 3 unidades',
+    'Tres galletas en empaque individual con motivo navideño.',
+    7000
+  ),
+  product(
+    'mini-alfajores-5',
+    'kmuffis',
+    'reposteria',
+    'Mini alfajores · 5 unidades',
+    'Empaque con cinco mini alfajores.',
+    7000
+  ),
+  product(
+    'empaque-mixto',
+    'kmuffis',
+    'reposteria',
+    'Empaque mixto',
+    'Dos alfajores, tres galletas navideñas y una galleta básica de avena.',
+    9000
   ),
 
   // Café empacado (precios confirmados por el cliente)

@@ -281,6 +281,13 @@ Precios confirmados por el negocio el **2026-11-18**:
 | Lime Coffee          | $10.000 |
 | Limonadas de la casa | $8.000  |
 | Deditos de queso     | $4.000  |
+| Brownie              | $6.000  |
+| Muffin de vino       | $9.000  |
+| Torta individual     | $9.000  |
+| Galleta grande 200 g | $8.000  |
+| Galletas navideñas 3 | $7.000  |
+| Mini alfajores 5     | $7.000  |
+| Empaque mixto        | $9.000  |
 | Café empacado 250 g  | $25.000 |
 | Café empacado 500 g  | $45.000 |
 
@@ -289,12 +296,15 @@ Cambios de carta aplicados:
 - **Expreso** y **Macchiato** se retiraron: no se ofrecerán en la página.
 - **Moca** pasa a llamarse **Mocca**.
 - **Sandwich** pasa a llamarse **Sandwich Regio**.
+- **Galleta estilo Nueva York** pasa a **Galleta grande 200 g** (centro de chocolate).
+- Se agregaron a la repostería de KMuffis: muffin de vino, torta individual de vino,
+  galletas navideñas (3), mini alfajores (5) y empaque mixto.
 
 Lo que falta confirmar antes de publicar la carta definitiva:
 
 - **Métodos manuales**: V60, Chemex, Aeropress y sifón.
-- **Sandwich Regio** y toda la repostería de KMuffis (muffins, brownie, alfajores, porción de
-  torta y galleta estilo Nueva York).
+- **Sandwich Regio** y el resto de la repostería de KMuffis (muffins de avena y de
+  vainilla/chocolate, alfajores tradicional y decorado, porción de torta).
 - **Qué repostería pertenece a KMuffis** y cuál se vende solo en El Regio.
 - **Eventos**: paquetes, cobertura, número mínimo de personas y disponibilidad.
 - **Domicilios**: zonas, horarios y costo.
@@ -384,14 +394,18 @@ Completado:
 1. **Catálogo con precios confirmados**: americano, capuchino, latte, mocca, frappé Regio,
    orange coffee, lime coffee, limonadas, deditos de queso y café empacado (250 g y 500 g).
    Expreso y macchiato se retiraron por decisión del negocio.
-2. **Carrito persistente**: contexto + `localStorage`, con cantidades, total y vaciado.
-3. **Pedidos por WhatsApp**: activados desde el carrito y desde el formulario de eventos.
-4. **Filtros por marca y categoría** en la sección de la carta.
+2. **Repostería de KMuffis con precio**: brownie $6.000, muffin de vino $9.000, torta
+   individual de vino $9.000, galleta grande 200 g $8.000, galletas navideñas x3 $7.000,
+   mini alfajores x5 $7.000 y empaque mixto $9.000.
+3. **Carrito persistente**: contexto + `localStorage`, con cantidades, total y vaciado.
+4. **Pedidos por WhatsApp**: activados desde el carrito y desde el formulario de eventos.
+5. **Filtros por marca y categoría** en la sección de la carta.
 
 Pendiente:
 
-- Confirmar precios de V60, Chemex, Aeropress, sifón, Sandwich Regio y la repostería de
-  KMuffis (hoy muestran _"Precio por confirmar"_).
+- Confirmar precios de V60, Chemex, Aeropress, sifón, Sandwich Regio y la repostería
+  restante (muffins de avena y de vainilla/chocolate, alfajores, porción de torta), que
+  hoy muestran _"Precio por confirmar"_.
 - Confirmar qué productos de repostería son de KMuffis y cuáles de El Regio.
 - Imágenes de producto y páginas por producto cuando crezca la carta.
 
