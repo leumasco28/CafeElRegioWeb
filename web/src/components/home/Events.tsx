@@ -1,5 +1,7 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { EVENT_TYPE_CARDS } from '../../content/eventTypes.ts';
+import { site } from '../../content/site.ts';
+import { buildWhatsAppUrl } from '../../lib/order.ts';
 import SectionHeading from '../ui/SectionHeading.tsx';
 import EventModal from '../ui/EventModal.tsx';
 import styles from './Events.module.css';
@@ -18,9 +20,30 @@ export default function Events() {
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
 
   const handleEventSubmit = (formData: EventFormData) => {
-    // El formulario está preparado para recibir los datos. Cuando exista un
-    // backend o servicio de recepción, aquí se debería hacer el fetch/POST.
-    console.log('Datos del evento:', formData);
+    const lines = [
+      `Solicitud de evento - ${site.name}`,
+      `Nombre: ${formData.name}`,
+      `Teléfono: ${formData.phone}`,
+      formData.email ? `Correo: ${formData.email}` : null,
+      `Tipo de evento: ${formData.eventType}`,
+      formData.eventDate ? `Fecha: ${formData.eventDate}` : null,
+      formData.attendees ? `Asistentes (aprox.): ${formData.attendees}` : null,
+      formData.message ? `Mensaje: ${formData.message}` : null,
+    ].filter(Boolean);
+
+    const message = lines.join('\n');
+    const url = buildWhatsAppUrl(message);
+
+    if (url) {
+      const win = window.open(url, '_blank', 'noopener,noreferrer');
+      if (!win) {
+        window.location.href = url;
+      }
+    } else {
+      console.log('Datos del evento (WhatsApp no disponible):', formData);
+    }
+
+    setIsEventModalOpen(false);
   };
 
   return (

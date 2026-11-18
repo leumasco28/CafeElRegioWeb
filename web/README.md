@@ -1,10 +1,10 @@
 ﻿# Café El Regio · KMuffis — Tienda web
 
 Andamiaje de la tienda web de **Café El Regio** y **KMuffis**, construido con React + Vite + TypeScript.
-Esta es la **Fase 1**: estructura, identidad visual y portada navegable.
+Esta es la **Fase 2**: catálogo con los precios confirmados, carrito local y pedidos por WhatsApp.
 
-> El sitio está **en construcción**. No hay precios confirmados, no hay carrito y no hay
-> pagos ni pedidos habilitados.
+> El sitio sigue **en construcción**: varios precios están pendientes de confirmación, pero el
+> carrito y el envío del pedido por WhatsApp ya funcionan. La web no procesa pagos.
 
 ---
 
@@ -132,7 +132,7 @@ web/
 ├─ src/
 │  ├─ components/
 │  │  ├─ layout/                 # Header (con menú móvil) y Footer
-│  │  ├─ ui/                     # BrandLogo, Pill, SectionHeading, BrandChannels, ChannelIcon, EventModal
+│  │  ├─ ui/                     # BrandLogo, Pill, SectionHeading, BrandChannels, ChannelIcon, EventModal, CartDrawer
 │  │  └─ home/                   # Hero, BrandSplit, CatalogPreview, Events, HowToOrder
 │  ├─ content/                   # Datos separados de la interfaz
 │  │  ├─ site.ts                 # Nombre, ciudad, contacto, estado de pedidos
@@ -140,13 +140,15 @@ web/
 │  │  ├─ catalog.ts              # Categorías y productos de muestra
 │  │  ├─ pages.json              # Datos de páginas para el editor visual (JSON local)
 │  │  ├─ eventTypes.ts           # Tipos de evento compartidos (Events y EventModal)
+│  ├─ context/
+│  │  └─ CartContext.tsx         # Carrito (React Context + localStorage)
 │  ├─ editor/                    # Editor visual propio (Puck a medida con JSON local)
 │  │  ├─ CraftEditor.tsx         # Wrapper de Craft.js: Editor, Frame, Element, useNode (drag-and-drop)
 │  │  ├─ canvas.tsx              # Lienzo, carga/guardado, auto-guardar, botón Agregar elemento
 │  │  ├─ panels/                 # ContentPanel, StylePanel, AdvancedPanel
 │  │  └─ store/                  # pageStore (Zustand + undo/redo), history (pila de estados)
 │  ├─ lib/
-│  │  ├─ order.ts                # Utilidades de pedido (Fase 2, desactivadas)
+│  │  ├─ order.ts                # Pedido: mensaje y deep-link de WhatsApp (activo)
 │  │  └─ pagesClient.ts          # Cliente local: loadPage, savePage, listPages (JSON + localStorage)
 │  ├─ renderer/                  # Renderizador ligero (solo lee JSON y dibuja)
 │  │  ├─ PageRenderer.tsx        # Renderizador recursivo con selección de nodos
@@ -266,29 +268,58 @@ y el texto "Todos los enlaces" apunta al agregador `atom.bio`.
 
 ## Estado de los datos
 
-Lo que falta confirmar antes de publicar la carta real:
+Precios confirmados por el negocio el **2026-11-18**:
 
-- **Precios vigentes** de cada producto (hay versiones con valores distintos en los menús).
+| Producto             | Precio  |
+| -------------------- | ------- |
+| Americano            | $5.000  |
+| Capuchino            | $7.000  |
+| Latte                | $6.000  |
+| Mocca                | $8.000  |
+| Frappé Regio         | $12.000 |
+| Orange Coffee        | $10.000 |
+| Lime Coffee          | $10.000 |
+| Limonadas de la casa | $8.000  |
+| Deditos de queso     | $4.000  |
+| Café empacado 250 g  | $25.000 |
+| Café empacado 500 g  | $45.000 |
+
+Cambios de carta aplicados:
+
+- **Expreso** y **Macchiato** se retiraron: no se ofrecerán en la página.
+- **Moca** pasa a llamarse **Mocca**.
+- **Sandwich** pasa a llamarse **Sandwich Regio**.
+
+Lo que falta confirmar antes de publicar la carta definitiva:
+
+- **Métodos manuales**: V60, Chemex, Aeropress y sifón.
+- **Sandwich Regio** y toda la repostería de KMuffis (muffins, brownie, alfajores, porción de
+  torta y galleta estilo Nueva York).
 - **Qué repostería pertenece a KMuffis** y cuál se vende solo en El Regio.
-- **Café empacado**: presentaciones (250 g / 500 g), molienda y precios.
 - **Eventos**: paquetes, cobertura, número mínimo de personas y disponibilidad.
 - **Domicilios**: zonas, horarios y costo.
 - **Datos legales**: razón social, NIT y avisos requeridos.
 
-Mientras no estén confirmados, la interfaz muestra _"Precio por confirmar"_ y
-_"Sitio en construcción"_. **No se deben inventar precios.**
+Mientras no estén confirmados, la interfaz muestra _"Precio por confirmar"_ y el producto no
+se puede agregar al carrito. **No se deben inventar precios.**
 
 ---
 
 ## Pedidos y pagos
 
-Los pedidos están desactivados a propósito:
+Los pedidos por WhatsApp están activos:
 
-- `src/content/site.ts` → `orders.enabled: false`
+- `src/content/site.ts` → `orders.enabled: true`
 - `src/lib/order.ts` → `PEDIDOS_HABILITADOS` deriva de esa bandera.
 
-Con la bandera en `false`, `buildOrderMessage()` y `buildWhatsAppUrl()` devuelven `null` y no
-se renderiza ningún enlace a WhatsApp. La interfaz solo explica cómo funcionará el flujo.
+El carrito (`src/context/CartContext.tsx`) guarda producto y cantidad en `localStorage`
+(clave `cafe_el_regio_cart`), sin datos personales ni de pago. El botón **Enviar pedido por
+WhatsApp** arma el mensaje con `buildOrderMessage()` y abre
+`https://wa.me/573015150059?text=...` mediante `buildWhatsAppUrl()`. El formulario de eventos
+usa el mismo mecanismo con los datos de la solicitud.
+
+La web **no cobra ni procesa pagos**: el pago se acuerda en el chat. Si la bandera vuelve a
+`false`, ambas funciones devuelven `null` y no se muestra ningún enlace.
 
 ---
 
@@ -346,17 +377,23 @@ El `renderer/` no depende de `editor/`: la página publicada solo importa el ren
 
 ---
 
-## Puntos de extensión para la Fase 2
+## Estado de la Fase 2
 
-1. **Catálogo real**: completar `src/content/catalog.ts` con precios, disponibilidad,
-   imágenes y la marca correcta de cada producto.
-2. **Carrito persistente**: añadir un contexto/estado de carrito y guardar en
-   `localStorage` (sin datos sensibles).
-3. **Pedidos por WhatsApp**: activar `orders.enabled`, usar `lib/order.js` para armar el
-   mensaje y generar el enlace `wa.me`.
-4. **Filtros y búsqueda**: la sección de carta ya filtra por marca; se puede ampliar por
-   categoría.
-5. **Páginas por producto**: al crecer el catálogo, mover la carta a su propia ruta.
+Completado:
+
+1. **Catálogo con precios confirmados**: americano, capuchino, latte, mocca, frappé Regio,
+   orange coffee, lime coffee, limonadas, deditos de queso y café empacado (250 g y 500 g).
+   Expreso y macchiato se retiraron por decisión del negocio.
+2. **Carrito persistente**: contexto + `localStorage`, con cantidades, total y vaciado.
+3. **Pedidos por WhatsApp**: activados desde el carrito y desde el formulario de eventos.
+4. **Filtros por marca y categoría** en la sección de la carta.
+
+Pendiente:
+
+- Confirmar precios de V60, Chemex, Aeropress, sifón, Sandwich Regio y la repostería de
+  KMuffis (hoy muestran _"Precio por confirmar"_).
+- Confirmar qué productos de repostería son de KMuffis y cuáles de El Regio.
+- Imágenes de producto y páginas por producto cuando crezca la carta.
 
 ---
 

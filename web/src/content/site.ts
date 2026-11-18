@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Configuracion publica del sitio.
  * No contiene credenciales ni secretos.
  * Los pedidos permanecen deshabilitados durante la Fase 1.
@@ -61,10 +61,10 @@ export const site: SiteConfig = {
     ],
   },
   orders: {
-    // Interruptor de seguridad: la UI no habilita compra ni pago.
-    enabled: false,
+    // Pedidos habilitados por WhatsApp (Fase 2). La UI habilita la cartera de compras;
+    enabled: true,
     channel: 'WhatsApp',
-    note: 'Pedidos y pagos se habilitan en una fase posterior.',
+    note: 'Los pedidos se envian por WhatsApp. Los pagos se coordinan directamente con el equipo.',
   },
   status: 'Sitio en construcción',
 };

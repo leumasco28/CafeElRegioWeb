@@ -170,3 +170,31 @@
     margin-top: var(--space-lg);
   }
 }
+
+.addButton {
+  margin-top: auto;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--color-ink);
+  color: var(--color-cream);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color var(--transition),
+    border-color var(--transition);
+}
+
+.addButton:hover {
+  border-color: var(--color-ink);
+  background: var(--color-ink-soft);
+}
+
+@media (max-width: 780px) {
+  .addButton {
+    width: 100%;
+  }
+}

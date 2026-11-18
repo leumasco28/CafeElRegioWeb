@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { brandsById } from '../../content/brands.ts';
 import type { Brand } from '../../content/brands.ts';
 import {
@@ -8,6 +8,7 @@ import {
   products,
   type Product,
 } from '../../content/catalog.ts';
+import { useCart } from '../../context/CartContext.tsx';
 import SectionHeading from '../ui/SectionHeading.tsx';
 import styles from './CatalogPreview.module.css';
 
@@ -45,6 +46,7 @@ type ProductCardProps = {
 function ProductCard({ item }: ProductCardProps) {
   const category: Category | undefined = categoriesById[item.categoryId];
   const brand: Brand | undefined = brandsById[item.brandId];
+  const { addItem } = useCart();
 
   return (
     <li className={styles.card} data-brand={item.brandId}>
@@ -62,6 +64,15 @@ function ProductCard({ item }: ProductCardProps) {
           ? priceFormatter.format(item.price)
           : 'Precio por confirmar'}
       </p>
+
+      <button
+        type="button"
+        className={styles.addButton}
+        onClick={() => addItem(item.id)}
+        aria-label={`Agregar ${item.name} al carrito`}
+      >
+        Agregar
+      </button>
     </li>
   );
 }
@@ -69,6 +80,7 @@ function ProductCard({ item }: ProductCardProps) {
 export default function CatalogPreview() {
   const [brandFilter, setBrandFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const { itemCount } = useCart();
 
   const visibleProducts = products.filter((item: Product) => {
     const matchBrand = brandFilter === 'all' || item.brandId === brandFilter;
@@ -118,7 +130,10 @@ export default function CatalogPreview() {
             ))}
           </div>
 
-          <p className={styles.counter}>{visibleProducts.length} productos de muestra</p>
+          <p className={styles.counter}>
+            {visibleProducts.length} productos de muestra
+            {itemCount > 0 ? ` · ${itemCount} en el carrito` : ''}
+          </p>
         </div>
 
         <p className="visually-hidden" aria-live="polite">

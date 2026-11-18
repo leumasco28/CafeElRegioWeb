@@ -1,11 +1,12 @@
 /**
- * Catalogo de muestra.
+ * Carta de Café El Regio + KMuffis.
  *
  * IMPORTANTE:
- * - No hay precios confirmados en esta fase. `price` puede ser null.
- * - `priceStatus: 'por-confirmar'` evita que la UI invente valores.
+ * - `price` puede ser null cuando el negocio aún no confirma el valor.
+ * - `priceStatus: 'por-confirmar'` evita que la UI invente precios.
+ * - `available` se deriva del precio: sin precio no se puede pedir.
  * - La pertenencia de cada producto a una marca debe validarse con el negocio
- *   antes de la Fase 2 (especialmente la repostería de KMuffis).
+ *   (especialmente la repostería de KMuffis).
  */
 
 export type Category = {
@@ -41,7 +42,7 @@ export const categoriesById: CategoriesById = Object.fromEntries(
 );
 
 export const catalogNote =
-  'Muestra de la carta. Los precios, la disponibilidad y la asignación de marca están pendientes de confirmación.';
+  'Carta de muestra. Los productos sin precio están pendientes de confirmación con el negocio.';
 
 const product = (
   id: string,
@@ -68,29 +69,37 @@ export const products: Product[] = [
     'regio',
     'calientes',
     'Americano',
-    'Café negro de la casa, preparado al momento.'
+    'Café negro de la casa, preparado al momento.',
+    5000
   ),
   product(
     'capuchino',
     'regio',
     'calientes',
     'Capuchino',
-    'Espresso con leche vaporizada y espuma.'
+    'Espresso con leche vaporizada y espuma.',
+    7000
   ),
-  product('latte', 'regio', 'calientes', 'Latte', 'Espresso con más leche y textura suave.'),
-  product('expreso', 'regio', 'calientes', 'Expreso', 'Shot concentrado de café.'),
-  product('macchiato', 'regio', 'calientes', 'Macchiato', 'Espresso con un toque de leche.'),
-  product('moca', 'regio', 'calientes', 'Moca', 'Espresso con chocolate y leche.'),
+  product('latte', 'regio', 'calientes', 'Latte', 'Espresso con más leche y textura suave.', 6000),
+  product('mocca', 'regio', 'calientes', 'Mocca', 'Espresso con chocolate y leche.', 8000),
 
-  product('frappe-regio', 'regio', 'frias', 'Frappé Regio', 'Café frío batido con hielo y crema.'),
-  product('orange-coffee', 'regio', 'frias', 'Orange Coffee', 'Café frío con naranja.'),
-  product('lime-coffee', 'regio', 'frias', 'Lime Coffee', 'Café frío con limón.'),
+  product(
+    'frappe-regio',
+    'regio',
+    'frias',
+    'Frappé Regio',
+    'Café frío batido con hielo y crema.',
+    12000
+  ),
+  product('orange-coffee', 'regio', 'frias', 'Orange Coffee', 'Café frío con naranja.', 10000),
+  product('lime-coffee', 'regio', 'frias', 'Lime Coffee', 'Café frío con limón.', 10000),
   product(
     'limonadas',
     'regio',
     'frias',
     'Limonadas de la casa',
-    'Coco, cereza, hierbabuena o tradicional.'
+    'Coco, cereza, hierbabuena o tradicional.',
+    8000
   ),
 
   product('v60', 'regio', 'metodos', 'V60', 'Filtrado por goteo, preparado a mano.'),
@@ -98,8 +107,8 @@ export const products: Product[] = [
   product('aeropress', 'regio', 'metodos', 'Aeropress', 'Extracción por presión en poco tiempo.'),
   product('sifon', 'regio', 'metodos', 'Sifón', 'Preparación de laboratorio, servida al momento.'),
 
-  product('sandwich', 'regio', 'salados', 'Sandwich', 'Pollo, Regio o mixto.'),
-  product('dedito-queso', 'regio', 'salados', 'Dedito de queso', 'Horneado de queso.'),
+  product('sandwich', 'regio', 'salados', 'Sandwich Regio', 'Pollo, Regio o mixto.'),
+  product('dedito-queso', 'regio', 'salados', 'Deditos de queso', 'Horneado de queso.', 4000),
 
   // KMuffis (selección por confirmar)
   product(

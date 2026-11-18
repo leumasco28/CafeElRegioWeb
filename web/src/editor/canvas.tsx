@@ -12,12 +12,12 @@ type PanelTab = 'contenido' | 'estilo' | 'avanzado';
 type ElementType = 'Section' | 'Row' | 'Column' | 'Text' | 'Image' | 'Button';
 
 const ELEMENT_LABELS: Record<ElementType, string> = {
-  Section: 'Secci\u00f3n',
+  Section: 'Sección',
   Row: 'Fila',
   Column: 'Columna',
   Text: 'Texto',
   Image: 'Imagen',
-  Button: 'Bot\u00f3n',
+  Button: 'Botón',
 };
 
 interface CanvasProps {
@@ -46,7 +46,7 @@ export function Canvas({ initialSlug = '/inicio' }: CanvasProps) {
       try {
         await savePage(page);
       } catch (err) {
-        console.error('Error guardando p\u00e1gina:', err);
+        console.error('Error guardando página:', err);
       }
     }, 800);
   }, [page]);
@@ -65,12 +65,12 @@ export function Canvas({ initialSlug = '/inicio' }: CanvasProps) {
             setPage(doc);
             selectNode(null);
           } else {
-            setError(`No se encontr\u00f3 la p\u00e1gina "${slug}"`);
+            setError(`No se encontró la página "${slug}"`);
           }
           setLoading(false);
         })
         .catch((err) => {
-          setError(err instanceof Error ? err.message : 'Error cargando la p\u00e1gina');
+          setError(err instanceof Error ? err.message : 'Error cargando la página');
           setLoading(false);
         });
     },
@@ -131,7 +131,7 @@ export function Canvas({ initialSlug = '/inicio' }: CanvasProps) {
     if (type === 'Text') {
       newNode.props = { tag: 'p', content: 'Nuevo texto' };
     } else if (type === 'Button') {
-      newNode.props = { text: 'Bot\u00f3n', href: '#' };
+      newNode.props = { text: 'Botón', href: '#' };
     } else if (type === 'Image') {
       newNode.props = { src: '', alt: 'Imagen' };
     }
@@ -177,7 +177,7 @@ export function Canvas({ initialSlug = '/inicio' }: CanvasProps) {
           color: '#6b7280',
         }}
       >
-        No hay p\u00e1gina cargada.
+        No hay página cargada.
       </div>
     );
   }
@@ -245,11 +245,11 @@ export function Canvas({ initialSlug = '/inicio' }: CanvasProps) {
               ?
             </button>
             <span style={{ fontWeight: 600, marginLeft: '0.5rem' }}>
-              Caf\u00e9 El Regio - Editor Visual
+              Café El Regio - Editor Visual
             </span>
           </div>
 
-          {/* Bot\u00f3n Agregar elemento */}
+          {/* Botón Agregar elemento */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <button
               onClick={() => setAddMenuOpen(!addMenuOpen)}
@@ -323,7 +323,7 @@ export function Canvas({ initialSlug = '/inicio' }: CanvasProps) {
           </select>
         </div>
         <div style={{ fontSize: '0.875rem', opacity: 0.8 }}>
-          P\u00e1gina: {page.title} \u00bf Estado: {page.status}
+          Página: {page.title} ¿ Estado: {page.status}
         </div>
       </div>
 
@@ -353,7 +353,7 @@ export function Canvas({ initialSlug = '/inicio' }: CanvasProps) {
         >
           <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem' }}>Editor Visual</h3>
           <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
-            P\u00e1gina: {page.title} ({page.slug})
+            Página: {page.title} ({page.slug})
           </p>
           <p style={{ margin: '0 0 1rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
             Estado: {page.status}
@@ -396,7 +396,7 @@ export function Canvas({ initialSlug = '/inicio' }: CanvasProps) {
           )}
 
           <div style={{ marginTop: '1rem', fontSize: '0.75rem', color: '#9ca3af' }}>
-            Cambios se guardan autom\u00e1ticamente en localStorage
+            Cambios se guardan automáticamente en localStorage
           </div>
         </div>
       </div>

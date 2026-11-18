@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es-CO">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Editor Web — Café El Regio</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="popup">
+      <header class="popup-header">
+        <div class="brand">
+          <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+            <path d="M2 17l10 5 10-5" />
+            <circle cx="12" cy="13" r="1" />
+          </svg>
+          <span class="brand-name">Café El Regio</span>
+        </div>
+        <span class="version">v1.0.0</span>
+      </header>
+
+      <nav class="tabs">
+        <button class="tab active" data-tab="editor">Editor</button>
+        <button class="tab" data-tab="pages">Páginas</button>
+      </nav>
+
+      <section class="panel" id="panel-editor">
+        <h2>Crear o editar página</h2>
+        <div class="form-group">
+          <label for="page-title">Título de la página</label>
+          <input type="text" id="page-title" placeholder="Ej: Inicio, Carta, Nosotros" />
+        </div>
+        <div class="form-group">
+          <label for="page-slug">Slug (ruta)</label>
+          <input type="text" id="page-slug" placeholder="Ej: /inicio, /carta" value="/inicio" />
+          <p class="hint">Usa el formato /nombre-de-pagina</p>
+        </div>
+        <div class="form-group">
+          <label for="page-status">Estado</label>
+          <select id="page-status">
+            <option value="draft">Borrador</option>
+            <option value="published">Publicado</option>
+          </select>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary" id="btn-open-editor">Abrir en editor visual</button>
+          <button class="btn btn-primary" id="btn-create-page">Crear página</button>
+        </div>
+        <p id="msg-editor" class="msg"></p>
+      </section>
+
+      <section class="panel hidden" id="panel-pages">
+        <h2>Páginas guardadas</h2>
+        <div class="toolbar">
+          <button class="btn btn-small btn-refresh" id="btn-refresh-pages">Actualizar</button>
+        </div>
+        <ul id="pages-list" class="pages-list"></ul>
+        <p id="msg-pages" class="msg"></p>
+      </section>
+    </div>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

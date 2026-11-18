@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { site } from '../../content/site.ts';
+import { useCart } from '../../context/CartContext.tsx';
 import BrandLogo from '../ui/BrandLogo.tsx';
 import styles from './Header.module.css';
 
@@ -16,8 +17,13 @@ const NAV_LINKS: NavLink[] = [
   { href: '#contacto', label: 'Contacto' },
 ];
 
-export default function Header() {
+type HeaderProps = {
+  onToggleCart: () => void;
+};
+
+export default function Header({ onToggleCart }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { itemCount } = useCart();
 
   // Cierra el menú móvil con Escape y al volver al escritorio.
   useEffect(() => {
@@ -43,7 +49,7 @@ export default function Header() {
   return (
     <header className={styles.header}>
       <div className={`container ${styles.inner}`}>
-        <a href="#inicio" className={styles.brand} aria-label={`${site.name} — inicio`}>
+        <a href="#inicio" className={styles.brand} aria-label={`${site.name}, inicio`}>
           <span className={styles.logoBadge}>
             <BrandLogo brandId="regio" eager decorative className={styles.logo} />
           </span>
@@ -52,6 +58,23 @@ export default function Header() {
             <span className={styles.brandTag}>Café colombiano</span>
           </span>
         </a>
+
+        <button
+          type="button"
+          className={styles.cartButton}
+          aria-label={itemCount > 0 ? `Carrito (${itemCount} items)` : 'Carrito'}
+          aria-haspopup="dialog"
+          onClick={onToggleCart}
+        >
+          <span className={styles.cartIcon} aria-hidden="true">
+            🛒
+          </span>
+          {itemCount > 0 && (
+            <span className={styles.cartBadge} aria-hidden="true">
+              {itemCount}
+            </span>
+          )}
+        </button>
 
         <button
           type="button"

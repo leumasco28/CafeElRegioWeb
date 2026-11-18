@@ -1,12 +1,11 @@
 /**
  * Utilidades de pedido (Fase 2).
  *
- * Todavia no se usan en la UI. Dejan preparado el contrato para:
- * - carrito persistente,
+ * Se usan desde el carrito (CartDrawer) y el formulario de eventos:
  * - armado del mensaje de pedido,
- * - deep-link a WhatsApp.
+ * - deep-link a WhatsApp (wa.me).
  *
- * No se habilita ningun pago ni envio real en esta fase.
+ * No se procesa ningun pago ni envio real: todo se coordina por WhatsApp.
  */
 import { site } from '../content/site.ts';
 

@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Tienda ligera de Cafe El Regio y KMuffis. Fase 1: andamiaje visual.",
+  "description": "Tienda ligera de Cafe El Regio y KMuffis. Fase 2: carta con precios y carrito.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -14,7 +14,9 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json,md}\"",
     "test": "vitest",
     "test:run": "vitest run",
-    "prepare": "husky"
+    "prepare": "husky",
+    "extension:zip": "node -e \"const {execSync}=require('child_process'); execSync('powershell -Command \\\"Compress-Archive -Path extension/* -DestinationPath extension/cafe-el-regio-editor.zip -Force\\\"\\\", {cwd: 'web'})\"",
+    "extension:open": "start chrome --load-extension=extension"
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --fix",

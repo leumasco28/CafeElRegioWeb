@@ -134,7 +134,7 @@ Carpeta de destino de la web: `F:\mi seguridad\Pictures\cafe\CafeElRegioWeb\web`
 
 ## 5. Datos comerciales faltantes o a confirmar ⚠️
 
-1. **Lista de precios vigente** — `menu2` (Capuchino 6k) vs `menu3` (7k) y galleta 8k vs 10k. Confirmar qué versión está vigente y unificar.
+1. **Lista de precios vigente** — ✅ resuelta el 2026-11-18. Precios confirmados y ya cargados en `web/src/content/catalog.ts`: Americano $5.000; Capuchino **$7.000**; Latte $6.000; Mocca $8.000; Frappé Regio $12.000; Orange Coffee $10.000; Lime Coffee $10.000; Limonadas $8.000; Deditos de queso $4.000; café empacado 250 g $25.000 y 500 g $45.000. **Expreso y Macchiato se retiran de la página.** Siguen por confirmar: V60, Chemex, Aeropress, sifón, Sandwich Regio, repostería de KMuffis y galleta estilo Nueva York.
 2. **Productos KMuffis** — falta confirmar qué ítems de pastelería/muffins corresponden a KMuffis y su precio de venta.
 3. **Café empacado** — se menciona en el plan y aparece en fotos (`CAFE_EL_REGIO_SIC_PIe_450x450.jpg`, bolsa en poster), pero no hay precios ni presentaciones.
 4. **Datos legales** — nombre legal/NIT/régimen. En `Registro/` hay documentos de identidad y de trámite; **no se abrieron** (datos personales sensibles). Pendiente obtener del titular por fuera.
@@ -214,11 +214,15 @@ Inventario terminado; `Recursos/` intacto. Sin git, sin dependencias, sin ejecut
 
 Fase 1 al 100% completa. Listo para pasar a la Fase 2 (confirmar precios del catálogo y activar pedidos por WhatsApp).
 
-### Fase 2 — Catálogo real
+### Fase 2 — Catálogo real y carrito (en curso)
 
-- Confirmar precios con el negocio (§5) y volcarlos a `catalog/productos.ts`.
-- Seleccionar y optimizar 15–25 imágenes (logo SVG, logos KMuffis, fotos de producto y de eventos) como WebP.
-- Página de eventos con las 8+ fechas de `Regio-kmfs/`.
+- ✅ Precios confirmados por el negocio (2026-11-18) y cargados en `web/src/content/catalog.ts`. Se retiraron Expreso y Macchiato; "Moca" pasó a "Mocca" y "Sandwich" a "Sandwich Regio".
+- ✅ Carrito con React Context + `localStorage` (`web/src/context/CartContext.tsx`), cajón de carrito (`web/src/components/ui/CartDrawer.tsx`) y botón de carrito en el header.
+- ✅ Pedidos por WhatsApp activados (`orders.enabled: true`): el carrito y el formulario de eventos generan el deep-link `wa.me/573015150059?text=...`.
+- ✅ Corrección de caracteres con tilde que se mostraban dañados (mojibake) en Header, CatalogPreview, CartDrawer, HowToOrder, App y Header.module.css.
+- ⬜ Confirmar precios de métodos manuales, Sandwich Regio y repostería de KMuffis.
+- ⬜ Seleccionar y optimizar 15–25 imágenes (logo SVG, logos KMuffis, fotos de producto y de eventos) como WebP.
+- ⬜ Página de eventos con las 8+ fechas de `Regio-kmfs/`.
 
 ### Fase 3 — Contenido y refinamiento
 
