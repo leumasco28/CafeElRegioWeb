@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>QR Generator for Café El Regio</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <div id="qrcode"></div>
+    <script>
+        const menuUrl = 'http://localhost:5173/';
+        
+        // Generate QR code
+        new QRCode(document.getElementById('qrcode'), {
+            text: menuUrl,
+            width: 300,
+            height: 300,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+        });
+        
+        // Auto-download after generation
+        setTimeout(() => {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (canvas) {
+                canvas.toBlob((blob) => {
+                    const link = document.createElement('a');
+                    link.download = 'cafe-el-regio-menu-qr.png';
+                    link.href = URL.createObjectURL(blob);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(link.href);
+                    console.log('QR code downloaded successfully');
+                }, 'image/png');
+            }
+        }, 500);
+    </script>
+</body>
+</html>

@@ -5,7 +5,7 @@ import CartDrawer from '../src/components/ui/CartDrawer.tsx';
 import { formatCOP } from '../src/lib/order.ts';
 
 const STORAGE_KEY = 'cafe_el_regio_cart';
-const WHATSAPP_BASE = 'https://wa.me/573015150059?text=';
+const WHATSAPP_BASE = 'https://wa.me/573187133439?text=';
 
 function seedCart(items: Array<{ productId: string; quantity: number }>) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items));

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Configuracion publica del sitio.
  * No contiene credenciales ni secretos.
  * Los pedidos permanecen deshabilitados durante la Fase 1.
@@ -41,8 +41,8 @@ export const site: SiteConfig = {
     'Conoce Café El Regio, una propuesta de café colombiano que combina preparaciones cuidadosas, bebidas para disfrutar y una personalidad que no pasa desapercibida. Descubre nuestro café empacado, encuentra tu próxima bebida favorita o lleva la experiencia de El Regio a tu próximo evento.',
   contact: {
     // Numero publico visible en el material de marca (poster Regio + KMuffis).
-    whatsappDisplay: '301 515 0059',
-    whatsappNumber: '573015150059',
+    whatsappDisplay: '318 713 3439',
+    whatsappNumber: '573187133439',
     // Perfiles tomados de los QR de marca de Recursos/:
     // Instagram (QR-ElRegio-Instagram.jpeg) y TikTok (QR-ElRegio-Tiktok.jpeg).
     social: [

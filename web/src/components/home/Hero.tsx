@@ -76,7 +76,7 @@ export default function Hero() {
           <p className={styles.kicker}>Bucaramanga · Café colombiano</p>
 
           <h1 id="hero-title" className={styles.title}>
-            Café hecho con calma, <em>servido con carácter.</em>
+            Café hecho con alma, <em>Servido con Carácter.</em>
           </h1>
 
           <p className={styles.lead}>

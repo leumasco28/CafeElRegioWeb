@@ -1,0 +1,12 @@
+{
+  "name": "qr-generator",
+  "version": "1.0.0",
+  "description": "Generate QR code for Café El Regio",
+  "main": "generate-qr.js",
+  "scripts": {
+    "generate": "node generate-qr.js"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.3"
+  }
+}
