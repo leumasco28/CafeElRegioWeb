@@ -55,10 +55,3 @@
   for = "/site.webmanifest"
   [headers.values]
     Cache-Control = "public, max-age=86400"
-
-# SPA fallback for client-side routing
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  conditions = {Role = ["admin"]}
