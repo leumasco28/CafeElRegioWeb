@@ -28,10 +28,26 @@ export const HERO_ACTIONS: HeroAction[] = [
   { label: 'Consultar eventos', href: '#eventos', tone: 'secondary' },
 ];
 
+// Christmas season: active from December 1st through January 5th (inclusive)
+// PERMANENT PREVIEW MODE: Set to true to always show Christmas version for testing
+const CHRISTMAS_PREVIEW = true;
+const CHRISTMAS_START = new Date(new Date().getFullYear(), 11, 1); // Dec 1st
+const CHRISTMAS_END = new Date(new Date().getFullYear() + 1, 0, 6); // Jan 6th 00:00 = end of Jan 5th
+const isChristmasSeason = () => {
+  if (CHRISTMAS_PREVIEW) return true;
+  const now = new Date();
+  return now >= CHRISTMAS_START && now < CHRISTMAS_END;
+};
+
 export default function Hero() {
   const [channelsOpen, setChannelsOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const channelsRef = useRef<HTMLDivElement | null>(null);
+  const desktopVideoRef = useRef<HTMLVideoElement | null>(null);
+  const mobileVideoRef = useRef<HTMLVideoElement | null>(null);
+  const [desktopVideoLoaded, setDesktopVideoLoaded] = useState(false);
+  const [mobileVideoLoaded, setMobileVideoLoaded] = useState(false);
+  const christmasActive = isChristmasSeason();
 
   useEffect(() => {
     if (!channelsOpen) return undefined;
@@ -54,7 +70,6 @@ export default function Hero() {
     };
   }, [channelsOpen]);
 
-  // El hover solo aplica a ratón: en táctil y lápiz el botón funciona con tap.
   const openOnHover = (event: PointerEvent) => {
     if (event.pointerType === 'mouse') setChannelsOpen(true);
   };
@@ -65,103 +80,318 @@ export default function Hero() {
     setChannelsOpen(false);
   };
 
+  const handleDesktopVideoLoad = () => {
+    setDesktopVideoLoaded(true);
+    desktopVideoRef.current?.play().catch(() => {
+      // Autoplay may be blocked, user can tap to play
+    });
+  };
+
+  const handleMobileVideoLoad = () => {
+    setMobileVideoLoaded(true);
+    mobileVideoRef.current?.play().catch(() => {
+      // Autoplay may be blocked, user can tap to play
+    });
+  };
+
+  // Helper to render title with <em> as actual HTML
+  const renderTitle = (christmas: boolean) => {
+    if (christmas) {
+      return (
+        <>
+          Cajas navideñas listas para
+          <em> regalar momentos</em>.
+        </>
+      );
+    }
+    return (
+      <>
+        Café hecho con alma,
+        <em> Servido con Carácter.</em>
+      </>
+    );
+  };
+
   return (
-    <section id="inicio" className={styles.hero} aria-labelledby="hero-title">
+    <section
+      id="inicio"
+      className={`${styles.hero} ${christmasActive ? styles.christmas : ''}`}
+      aria-labelledby="hero-title"
+    >
       <div className={styles.glowClip} aria-hidden="true">
         <div className={styles.glow} />
       </div>
 
       <div className={`container ${styles.grid}`}>
-        <div className={styles.copy}>
-          <p className={styles.kicker}>Bucaramanga · Café colombiano</p>
+        {!christmasActive && (
+          <div className={styles.copy}>
+            <p className={styles.kicker}>Bucaramanga · Café colombiano</p>
 
-          <h1 id="hero-title" className={styles.title}>
-            Café hecho con alma, <em>Servido con Carácter.</em>
-          </h1>
+            <h1 id="hero-title" className={styles.title}>
+              {renderTitle(christmasActive)}
+            </h1>
 
-          <p className={styles.lead}>
-            Conoce Café El Regio, una propuesta de café colombiano que combina preparaciones
-            cuidadosas, bebidas para disfrutar y una personalidad que no pasa desapercibida.
-          </p>
-          <p className={styles.leadSecondary}>
-            Descubre nuestro café empacado, encuentra tu próxima bebida favorita o lleva la
-            experiencia de El Regio a tu próximo evento.
-          </p>
+            <p className={styles.lead}>
+              {christmasActive
+                ? 'Lleva la magia de Café El Regio y KMuffis a tu mesa esta Navidad. Cajas con café empacado, galletas navideñas y repostería artesanal.'
+                : 'Conoce Café El Regio, una propuesta de café colombiano que combina preparaciones cuidadosas, bebidas para disfrutar y una personalidad que no pasa desapercibida.'}
+            </p>
+            <p className={styles.leadSecondary}>
+              {christmasActive
+                ? 'Disponibles por tiempo limitado. Pide la tuya antes del 5 de enero.'
+                : 'Descubre nuestro café empacado, encuentra tu próxima bebida favorita o lleva la experiencia de El Regio a tu próximo evento.'}
+            </p>
 
-          <div className={styles.actions}>
-            <a className={styles.primary} href={HERO_ACTIONS[0].href}>
-              {HERO_ACTIONS[0].label}
-            </a>
-            <a className={styles.secondary} href={HERO_ACTIONS[1].href}>
-              {HERO_ACTIONS[1].label}
-            </a>
-            <a className={styles.outline} href={HERO_ACTIONS[2].href}>
-              {HERO_ACTIONS[2].label}
-            </a>
+            <div className={styles.actions}>
+              <a className={styles.primary} href={HERO_ACTIONS[0].href}>
+                {christmasActive ? 'Ver cajas navideñas' : HERO_ACTIONS[0].label}
+              </a>
+              <a className={styles.secondary} href={HERO_ACTIONS[1].href}>
+                {HERO_ACTIONS[1].label}
+              </a>
+              <a className={styles.outline} href={HERO_ACTIONS[2].href}>
+                {HERO_ACTIONS[2].label}
+              </a>
+            </div>
+
+            <ul className={styles.highlights} aria-label="Lo que ofrece la marca">
+              {(christmasActive
+                ? [
+                    'Cajas navideñas 🎄',
+                    'Café empacado 250g / 500g',
+                    'Galletas navideñas KMuffis',
+                    'Repostería artesanal',
+                  ]
+                : HIGHLIGHTS
+              ).map((item) => (
+                <li key={item}>
+                  <Pill tone="neutral">{item}</Pill>
+                </li>
+              ))}
+            </ul>
+
+            <p className={styles.notice}>
+              <span className={styles.dot} aria-hidden="true" />
+              {site.status}:{' '}
+              {christmasActive ? 'Temporada navideña activa' : 'catálogo y precios en preparación'}.
+            </p>
           </div>
-
-          <ul className={styles.highlights} aria-label="Lo que ofrece la marca">
-            {HIGHLIGHTS.map((item) => (
-              <li key={item}>
-                <Pill tone="neutral">{item}</Pill>
-              </li>
-            ))}
-          </ul>
-
-          <p className={styles.notice}>
-            <span className={styles.dot} aria-hidden="true" />
-            {site.status}: catálogo y precios en preparación.
-          </p>
-        </div>
+        )}
 
         <div className={styles.stage}>
-          <div className={styles.plate} aria-hidden="true">
-            <BrandLogo brandId="regio" eager className={styles.plateLogo} />
-          </div>
+          {christmasActive ? (
+            <>
+              {/* Christmas video wrapper - full width on desktop, full screen on mobile */}
+              <div className={styles.christmasVideoWrapper} aria-hidden="true">
+                {/* Desktop video: original with audio + controls */}
+                <video
+                  ref={desktopVideoRef}
+                  className={styles.christmasVideoDesktop}
+                  src="/assets/christmas/CAjitasXmas-ya.mp4"
+                  poster="/assets/christmas/promo4-2.jpg"
+                  autoPlay
+                  loop
+                  playsInline
+                  controls
+                  controlsList="nodownload"
+                  onLoadedData={handleDesktopVideoLoad}
+                  aria-label="Video promocional de cajas navideñas Café El Regio y KMuffis"
+                />
+                {!desktopVideoLoaded && (
+                  <div
+                    className={styles.videoPoster}
+                    style={{ backgroundImage: 'url(/assets/christmas/promo4-2.jpg)' }}
+                    aria-hidden="true"
+                  />
+                )}
 
-          <div className={styles.kcard}>
-            <div className={styles.kcardHead}>
-              <span className={styles.kcardLogoWrap}>
-                <BrandLogo brandId="kmuffis" decorative eager className={styles.kcardLogo} />
-              </span>
-              <span className={styles.kcardText}>
-                <strong>KMuffis</strong>
-                <small>Repostería artesanal</small>
-              </span>
-            </div>
+                {/* Mobile video: vertical 9:16 + controls */}
+                <video
+                  ref={mobileVideoRef}
+                  className={styles.christmasVideoMobile}
+                  src="/assets/christmas/vertical/CAjitasXmas-vertical.mp4"
+                  poster="/assets/christmas/promo4-2.jpg"
+                  autoPlay
+                  loop
+                  playsInline
+                  controls
+                  controlsList="nodownload"
+                  onLoadedData={handleMobileVideoLoad}
+                  aria-label="Video promocional de cajas navideñas Café El Regio y KMuffis"
+                />
+                {!mobileVideoLoaded && (
+                  <div
+                    className={styles.videoPoster}
+                    style={{ backgroundImage: 'url(/assets/christmas/promo4-2.jpg)' }}
+                    aria-hidden="true"
+                  />
+                )}
 
-            <div
-              className={styles.kcardFoot}
-              ref={channelsRef}
-              onPointerEnter={openOnHover}
-              onPointerLeave={closeOnLeave}
-            >
-              <button
-                ref={triggerRef}
-                type="button"
-                className={styles.kcardToggle}
-                aria-expanded={channelsOpen}
-                aria-controls={PANEL_ID}
-                aria-label="Canales oficiales de KMuffis"
-                onClick={() => setChannelsOpen((open) => !open)}
-              >
-                <span>Canales oficiales</span>
-                <ChannelIcon name="chevron" className={styles.kcardChevron} />
-              </button>
-
-              <div
-                className={styles.kcardPanel}
-                id={PANEL_ID}
-                data-open={channelsOpen || undefined}
-              >
-                <div className={styles.kcardPanelInner}>
-                  <BrandChannels brandId="kmuffis" variant="panel" />
+                {/* Christmas decorations overlay */}
+                <div className={styles.christmasDecorations} aria-hidden="true">
+                  <span
+                    className={styles.snowflake}
+                    style={{ top: '10%', left: '5%', animationDelay: '0s' }}
+                  >
+                    ❄
+                  </span>
+                  <span
+                    className={styles.snowflake}
+                    style={{ top: '20%', right: '8%', animationDelay: '1s' }}
+                  >
+                    ❅
+                  </span>
+                  <span
+                    className={styles.snowflake}
+                    style={{ top: '60%', left: '3%', animationDelay: '2s' }}
+                  >
+                    ❆
+                  </span>
+                  <span
+                    className={styles.snowflake}
+                    style={{ top: '70%', right: '5%', animationDelay: '3s' }}
+                  >
+                    ❄
+                  </span>
+                  <span
+                    className={styles.snowflake}
+                    style={{ top: '40%', left: '50%', animationDelay: '1.5s' }}
+                  >
+                    ✦
+                  </span>
+                  <span
+                    className={styles.sparkle}
+                    style={{ top: '15%', right: '15%', animationDelay: '0.5s' }}
+                  >
+                    ✧
+                  </span>
+                  <span
+                    className={styles.sparkle}
+                    style={{ top: '80%', left: '20%', animationDelay: '2.5s' }}
+                  >
+                    ✧
+                  </span>
+                  <span
+                    className={styles.sparkle}
+                    style={{ top: '30%', right: '25%', animationDelay: '3.5s' }}
+                  >
+                    ✧
+                  </span>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div className={styles.ring} aria-hidden="true" />
+              {/* Copy overlay on video - transparent background */}
+              <div className={styles.copyOverlay}>
+                <div className={styles.copyContent}>
+                  <p className={styles.kicker}>Bucaramanga · Café colombiano</p>
+
+                  <h1 id="hero-title" className={styles.title}>
+                    {renderTitle(christmasActive)}
+                  </h1>
+
+                  <p className={styles.lead}>
+                    {christmasActive
+                      ? 'Lleva la magia de Café El Regio y KMuffis a tu mesa esta Navidad. Cajas con café empacado, galletas navideñas y repostería artesanal.'
+                      : 'Conoce Café El Regio, una propuesta de café colombiano que combina preparaciones cuidadosas, bebidas para disfrutar y una personalidad que no pasa desapercibida.'}
+                  </p>
+                  <p className={styles.leadSecondary}>
+                    {christmasActive
+                      ? 'Disponibles por tiempo limitado. Pide la tuya antes del 5 de enero.'
+                      : 'Descubre nuestro café empacado, encuentra tu próxima bebida favorita o lleva la experiencia de El Regio a tu próximo evento.'}
+                  </p>
+
+                  <div className={styles.actions}>
+                    <a className={styles.primary} href={HERO_ACTIONS[0].href}>
+                      {christmasActive ? 'Ver cajas navideñas' : HERO_ACTIONS[0].label}
+                    </a>
+                    <a className={styles.secondary} href={HERO_ACTIONS[1].href}>
+                      {HERO_ACTIONS[1].label}
+                    </a>
+                    <a className={styles.outline} href={HERO_ACTIONS[2].href}>
+                      {HERO_ACTIONS[2].label}
+                    </a>
+                  </div>
+
+                  <ul className={styles.highlights} aria-label="Lo que ofrece la marca">
+                    {(christmasActive
+                      ? [
+                          'Cajas navideñas 🎄',
+                          'Café empacado 250g / 500g',
+                          'Galletas navideñas KMuffis',
+                          'Repostería artesanal',
+                        ]
+                      : HIGHLIGHTS
+                    ).map((item) => (
+                      <li key={item}>
+                        <Pill tone="neutral">{item}</Pill>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <p className={styles.notice}>
+                    <span className={styles.dot} aria-hidden="true" />
+                    {site.status}:{' '}
+                    {christmasActive
+                      ? 'Temporada navideña activa'
+                      : 'catálogo y precios en preparación'}
+                    .
+                  </p>
+                </div>
+              </div>
+
+              {/* KMuffis kcard removed from Christmas layout to avoid blocking video controls */}
+            </>
+          ) : (
+            <>
+              <div className={styles.plate} aria-hidden="true">
+                <BrandLogo brandId="regio" eager className={styles.plateLogo} />
+              </div>
+
+              <div className={styles.kcard}>
+                <div className={styles.kcardHead}>
+                  <span className={styles.kcardLogoWrap}>
+                    <BrandLogo brandId="kmuffis" decorative eager className={styles.kcardLogo} />
+                  </span>
+                  <span className={styles.kcardText}>
+                    <strong>KMuffis</strong>
+                    <small>Repostería artesanal</small>
+                  </span>
+                </div>
+
+                <div
+                  className={styles.kcardFoot}
+                  ref={channelsRef}
+                  onPointerEnter={openOnHover}
+                  onPointerLeave={closeOnLeave}
+                >
+                  <button
+                    ref={triggerRef}
+                    type="button"
+                    className={styles.kcardToggle}
+                    aria-expanded={channelsOpen}
+                    aria-controls={PANEL_ID}
+                    aria-label="Canales oficiales de KMuffis"
+                    onClick={() => setChannelsOpen((open) => !open)}
+                  >
+                    <span>Canales oficiales</span>
+                    <ChannelIcon name="chevron" className={styles.kcardChevron} />
+                  </button>
+
+                  <div
+                    className={styles.kcardPanel}
+                    id={PANEL_ID}
+                    data-open={channelsOpen || undefined}
+                  >
+                    <div className={styles.kcardPanelInner}>
+                      <BrandChannels brandId="kmuffis" variant="panel" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.ring} aria-hidden="true" />
+            </>
+          )}
         </div>
       </div>
     </section>

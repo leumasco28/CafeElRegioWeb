@@ -18,7 +18,6 @@
   pointer-events: none;
 }
 
-/* Recorta solo el resplandor; la tarjeta puede desplegar su panel sin cortes. */
 .glowClip {
   position: absolute;
   inset: 0;
@@ -41,7 +40,7 @@
 .grid {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
   gap: clamp(2rem, 5vw, 4.5rem);
 }
@@ -146,8 +145,6 @@
   background: rgba(247, 241, 226, 0.08);
   transform: translateY(-2px);
 }
-
-/* Tercera CTA: estilo outline para consultar eventos */
 
 .highlights {
   display: flex;
@@ -259,8 +256,6 @@
   text-transform: uppercase;
 }
 
-/* Botón de canales: parte inferior de la tarjeta de KMuffis */
-
 .kcardFoot {
   position: relative;
   padding: 0 0.55rem 0.5rem;
@@ -310,8 +305,6 @@
 .kcardToggle[aria-expanded='true'] .kcardChevron {
   transform: rotate(180deg);
 }
-
-/* Panel de canales: cuelga de la tarjeta, nivelado respecto a la rotación */
 
 .kcardPanel {
   position: absolute;
@@ -418,5 +411,324 @@
   .primary,
   .secondary {
     width: 100%;
+  }
+}
+
+/* ==========================================================================
+   Christmas Season Styles
+   ========================================================================== */
+
+.hero.christmas {
+  background: radial-gradient(120% 110% at 82% 0%, #2d1a0e 0%, #1a120a 48%, #0f0a06 100%);
+}
+
+.hero.christmas .title {
+  max-width: none;
+}
+
+.hero.christmas .title em {
+  color: var(--color-tiza);
+}
+
+/* Stage becomes full-width video container */
+.hero.christmas .stage {
+  display: block;
+  min-height: 0;
+  padding: 0;
+  max-width: none;
+}
+
+/* Video wrapper - full width on desktop, full viewport on mobile */
+.christmasVideoWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--color-ink);
+  border-radius: 0;
+}
+
+/* Desktop video: full width, muted autoplay */
+.christmasVideoDesktop {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Mobile video: vertical 9:16, hidden on desktop */
+.christmasVideoMobile {
+  display: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.videoPoster {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+
+.christmasVideoWrapper:has(video[readyState='4']) .videoPoster {
+  display: none;
+}
+
+/* Christmas decorations - subtle snowflakes/sparkles */
+.christmasDecorations {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.snowflake {
+  position: absolute;
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  color: rgba(255, 255, 255, 0.6);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  animation: snowfall 8s ease-in-out infinite;
+  user-select: none;
+}
+
+.sparkle {
+  position: absolute;
+  font-size: clamp(0.75rem, 1.5vw, 1rem);
+  color: rgba(233, 185, 73, 0.8);
+  text-shadow: 0 0 6px rgba(233, 185, 73, 0.9);
+  animation: sparkle 3s ease-in-out infinite;
+  user-select: none;
+}
+
+@keyframes snowfall {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(20px) rotate(180deg);
+    opacity: 0.9;
+  }
+}
+
+@keyframes sparkle {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.3) rotate(90deg);
+    opacity: 1;
+  }
+}
+
+/* Copy overlay on video - transparent background */
+.copyOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 4vw, 3rem);
+  z-index: 4;
+  pointer-events: none;
+}
+
+.copyContent {
+  max-width: min(600px, 90%);
+  pointer-events: auto;
+}
+
+.copyOverlay .kicker {
+  color: var(--color-tiza-soft);
+}
+
+.copyOverlay .title {
+  max-width: none;
+  color: var(--color-cream);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+}
+
+.copyOverlay .title em {
+  color: var(--color-tiza);
+}
+
+.copyOverlay .lead {
+  color: rgba(247, 241, 226, 0.95);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
+  max-width: 100%;
+}
+
+.copyOverlay .leadSecondary {
+  color: rgba(247, 241, 226, 0.85);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+  max-width: 100%;
+}
+
+.copyOverlay .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.copyOverlay .primary,
+.copyOverlay .secondary,
+.copyOverlay .outline {
+  pointer-events: auto;
+}
+
+.copyOverlay .highlights {
+  pointer-events: auto;
+}
+
+.copyOverlay .notice {
+  pointer-events: auto;
+}
+
+/* KMuffis kcard at bottom right - smaller */
+.christmasKcardBottom {
+  position: absolute;
+  bottom: clamp(1rem, 2vw, 1.5rem);
+  right: clamp(1rem, 2vw, 1.5rem);
+  z-index: 5;
+  --kcard-tilt: 2deg;
+  transform: rotate(var(--kcard-tilt));
+  pointer-events: auto;
+  width: min(200px, 20vw);
+  opacity: 0.95;
+}
+
+.christmasKcardBottom .kcardLogo {
+  width: 36px;
+  height: 36px;
+}
+
+.christmasKcardBottom .kcardText strong {
+  font-size: 0.9rem;
+}
+
+.christmasKcardBottom .kcardText small {
+  font-size: var(--text-2xs);
+}
+
+.christmasKcardBottom .kcardToggle {
+  min-height: 30px;
+  font-size: var(--text-2xs);
+  padding: 0.25rem 0.5rem;
+}
+
+/* Mobile adjustments for Christmas */
+@media (max-width: 920px) {
+  .christmasVideoWrapper {
+    aspect-ratio: 9 / 16;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .christmasVideoDesktop {
+    display: none;
+  }
+
+  .christmasVideoMobile {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero.christmas .stage {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .copyOverlay {
+    padding: clamp(1.5rem, 4vh, 2.5rem) clamp(1rem, 3vw, 1.5rem);
+    justify-content: flex-start;
+    padding-top: clamp(6rem, 15vh, 8rem);
+  }
+
+  .copyContent {
+    max-width: 100%;
+  }
+
+  .copyOverlay .title {
+    font-size: clamp(var(--text-2xl), 6vw, var(--text-3xl));
+    line-height: 1.1;
+  }
+
+  .copyOverlay .lead {
+    font-size: clamp(var(--text-base), 3vw, var(--text-lg));
+  }
+
+  .copyOverlay .leadSecondary {
+    font-size: clamp(var(--text-sm), 2.5vw, var(--text-base));
+  }
+
+  .copyOverlay .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .copyOverlay .primary,
+  .copyOverlay .secondary,
+  .copyOverlay .outline {
+    width: 100%;
+    text-align: center;
+  }
+
+  .videoCtaBottom {
+    bottom: clamp(1rem, 2vh, 1.5rem);
+    left: clamp(1rem, 3vw, 1.5rem);
+    right: clamp(1rem, 3vw, 1.5rem);
+    transform: none;
+    text-align: center;
+    padding: 1rem 1.5rem;
+  }
+
+  .christmasKcardBottom {
+    bottom: clamp(2rem, 3vh, 3.5rem);
+    right: clamp(0.75rem, 2vw, 1rem);
+    width: min(180px, 40vw);
+    opacity: 0.9;
+  }
+
+  .christmasKcardBottom .kcardLogo {
+    width: 32px;
+    height: 32px;
+  }
+
+  .christmasKcardBottom .kcardText strong {
+    font-size: 0.8rem;
+  }
+
+  .christmasKcardBottom .kcardToggle {
+    min-height: 28px;
+    font-size: var(--text-2xs);
+    padding: 0.2rem 0.4rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .snowflake,
+    .sparkle {
+      animation: none;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .christmasVideoDesktop,
+  .christmasVideoMobile {
+    animation: none;
+  }
+
+  .snowflake,
+  .sparkle {
+    animation: none;
   }
 }

@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { brandsById } from '../../content/brands.ts';
 import type { Brand } from '../../content/brands.ts';
 import {
@@ -47,9 +47,15 @@ function ProductCard({ item }: ProductCardProps) {
   const category: Category | undefined = categoriesById[item.categoryId];
   const brand: Brand | undefined = brandsById[item.brandId];
   const { addItem } = useCart();
+  const isFeatured = item.featured === true;
 
   return (
-    <li className={styles.card} data-brand={item.brandId}>
+    <li className={`${styles.card} ${isFeatured ? styles.featured : ''}`} data-brand={item.brandId}>
+      {isFeatured && (
+        <span className={styles.featuredBadge} aria-label="Destacado">
+          {item.featuredLabel || 'Destacado'}
+        </span>
+      )}
       <div className={styles.cardHead}>
         <span className={styles.category}>{category?.label}</span>
         <span className={styles.brand}>{brand?.shortName}</span>

@@ -198,3 +198,56 @@
     width: 100%;
   }
 }
+
+/* Featured product highlight */
+.featured {
+  position: relative;
+  border: 2px solid var(--color-tiza);
+  box-shadow: var(--shadow-lift);
+}
+
+.featured::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--color-tiza), var(--color-tiza-soft));
+  opacity: 0.15;
+  z-index: -1;
+}
+
+.featuredBadge {
+  position: absolute;
+  top: -0.75rem;
+  right: 1rem;
+  padding: 0.25rem 0.75rem;
+  background: var(--color-tiza);
+  color: var(--color-ink);
+  font-family: var(--font-label);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  box-shadow: var(--shadow-card);
+  z-index: 2;
+}
+
+[data-brand='kmuffis'].featured .featuredBadge {
+  background: var(--color-plum);
+  color: var(--color-cream);
+}
+
+.featured .name {
+  color: var(--brand-ink);
+}
+
+@media (max-width: 780px) {
+  .featuredBadge {
+    top: -0.6rem;
+    right: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.6rem;
+  }
+}

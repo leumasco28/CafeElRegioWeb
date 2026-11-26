@@ -24,6 +24,8 @@ export type Product = {
   price: number | null;
   priceStatus: 'por-confirmar' | 'confirmado';
   available: boolean;
+  featured?: boolean;
+  featuredLabel?: string;
 };
 
 export const categories: Category[] = [
@@ -50,7 +52,9 @@ const product = (
   categoryId: string,
   name: string,
   description: string,
-  price: number | null = null
+  price: number | null = null,
+  featured?: boolean,
+  featuredLabel?: string
 ): Product => ({
   id,
   brandId,
@@ -60,6 +64,8 @@ const product = (
   price,
   priceStatus: price === null ? 'por-confirmar' : 'confirmado',
   available: price !== null,
+  featured,
+  featuredLabel,
 });
 
 export const products: Product[] = [
@@ -91,8 +97,36 @@ export const products: Product[] = [
     'Café frío batido con hielo y crema.',
     12000
   ),
-  product('orange-coffee', 'regio', 'frias', 'Orange Coffee', 'Café frío con naranja.', 10000),
-  product('lime-coffee', 'regio', 'frias', 'Lime Coffee', 'Café frío con limón.', 10000),
+  product(
+    'frappe-baileys',
+    'regio',
+    'frias',
+    'Frappé de Baileys',
+    'Frappé de café con licor Baileys, crema y hielo.',
+    14000,
+    true,
+    'Estrella de la casa'
+  ),
+  product(
+    'orange-coffee',
+    'regio',
+    'frias',
+    'Orange Coffee',
+    'Café frío con naranja, refrescante y cítrico.',
+    10000,
+    true,
+    'Favorito del verano'
+  ),
+  product(
+    'lime-coffee',
+    'regio',
+    'frias',
+    'Lime Coffee',
+    'Café frío con limón, ácido y refrescante.',
+    10000,
+    true,
+    'Novedad refrescante'
+  ),
   product(
     'limonadas',
     'regio',
@@ -209,31 +243,39 @@ export const products: Product[] = [
     'regio',
     'empacado',
     'Café empacado 250 g · Molido',
-    'Café colombiano empacado, presentación de 250 g, molido.',
-    25000
+    'Café colombiano empacado, presentación de 250 g (media libra), molido.',
+    25000,
+    true,
+    'Media libra'
   ),
   product(
     'cafe-empacado-250-grano',
     'regio',
     'empacado',
     'Café empacado 250 g · En grano',
-    'Café colombiano empacado, presentación de 250 g, en grano.',
-    25000
+    'Café colombiano empacado, presentación de 250 g (media libra), en grano.',
+    25000,
+    true,
+    'Media libra'
   ),
   product(
     'cafe-empacado-500-molido',
     'regio',
     'empacado',
     'Café empacado 500 g · Molido',
-    'Café colombiano empacado, presentación de 500 g, molido.',
-    45000
+    'Café colombiano empacado, presentación de 500 g (una libra), molido.',
+    45000,
+    true,
+    'Una libra'
   ),
   product(
     'cafe-empacado-500-grano',
     'regio',
     'empacado',
     'Café empacado 500 g · En grano',
-    'Café colombiano empacado, presentación de 500 g, en grano.',
-    45000
+    'Café colombiano empacado, presentación de 500 g (una libra), en grano.',
+    45000,
+    true,
+    'Una libra'
   ),
 ];
