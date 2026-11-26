@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { PointerEvent, KeyboardEvent } from 'react';
 import { site } from '../../content/site.ts';
+import { isChristmasSeason } from '../../content/christmas.ts';
 import BrandChannels from '../ui/BrandChannels.tsx';
 import BrandLogo from '../ui/BrandLogo.tsx';
 import ChannelIcon from '../ui/ChannelIcon.tsx';
@@ -27,17 +28,6 @@ export const HERO_ACTIONS: HeroAction[] = [
   { label: 'Conocer la marca', href: '#marcas', tone: 'secondary' },
   { label: 'Consultar eventos', href: '#eventos', tone: 'secondary' },
 ];
-
-// Christmas season: active from December 1st through January 5th (inclusive)
-// PERMANENT PREVIEW MODE: Set to true to always show Christmas version for testing
-const CHRISTMAS_PREVIEW = true;
-const CHRISTMAS_START = new Date(new Date().getFullYear(), 11, 1); // Dec 1st
-const CHRISTMAS_END = new Date(new Date().getFullYear() + 1, 0, 6); // Jan 6th 00:00 = end of Jan 5th
-const isChristmasSeason = () => {
-  if (CHRISTMAS_PREVIEW) return true;
-  const now = new Date();
-  return now >= CHRISTMAS_START && now < CHRISTMAS_END;
-};
 
 export default function Hero() {
   const [channelsOpen, setChannelsOpen] = useState(false);
@@ -226,6 +216,17 @@ export default function Hero() {
                     aria-hidden="true"
                   />
                 )}
+
+                {/* Mobile-only CTA button below video */}
+                <div className={styles.mobileCTA}>
+                  <a
+                    href="#cajas-navidenas"
+                    className={styles.mobileCTAButton}
+                    aria-label="Ver cajas navideñas"
+                  >
+                    Ver cajas navideñas
+                  </a>
+                </div>
 
                 {/* Christmas decorations overlay */}
                 <div className={styles.christmasDecorations} aria-hidden="true">

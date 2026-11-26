@@ -142,3 +142,74 @@ button {
     outline: 3px solid Highlight;
   }
 }
+
+/* ==========================================================================
+   Tema Navideño Global
+   ========================================================================== */
+
+.christmas-theme {
+  /* Fondo navideño con patrón sutil */
+  background:
+    radial-gradient(circle at 15% 15%, rgba(212, 175, 55, 0.06) 0%, transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(27, 67, 50, 0.15) 0%, transparent 50%),
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.01) 0px,
+      rgba(255, 255, 255, 0.01) 2px,
+      transparent 2px,
+      transparent 6px
+    );
+}
+
+.christrum-theme .header,
+.christmas-theme .header {
+  background: color-mix(in srgb, var(--color-ink) 95%, transparent);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.christmas-theme .nav a:hover {
+  border-color: #d4af37;
+  color: #faf6f0;
+}
+
+.christmas-theme .hero.christmas {
+  /* Asegurar que el hero mantenga su tema navideño */
+  position: relative;
+  overflow: hidden;
+}
+
+.christmas-theme::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(27, 67, 50, 0.08) 0%, transparent 40%);
+  z-index: -1;
+}
+
+/* Copos de nieve animados para el tema navideño */
+@keyframes snow-fall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.christmas-theme .snowflake {
+  position: fixed;
+  pointer-events: none;
+  z-index: 5;
+  font-size: 1.5rem;
+  opacity: 0.8;
+  animation: snow-fall linear infinite;
+}
