@@ -158,6 +158,37 @@
   line-height: 1.55;
 }
 
+.legalTitle {
+  margin-top: var(--space-lg);
+}
+
+.aiNotice {
+  margin-top: var(--space-sm);
+  color: rgba(247, 241, 226, 0.68);
+  font-size: var(--text-2xs);
+  line-height: 1.55;
+}
+
+.cookieButton {
+  margin-top: var(--space-sm);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-tiza-soft);
+  font-size: var(--text-xs);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.cookieButton:hover {
+  color: var(--color-cream);
+}
+
+.contactList a {
+  text-underline-offset: 3px;
+}
+
 .bottom {
   display: flex;
   flex-wrap: wrap;

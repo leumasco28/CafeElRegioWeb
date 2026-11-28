@@ -1,19 +1,26 @@
+import { Link } from 'react-router-dom';
+import { AI_CONTENT_NOTICE } from '../../content/legal.ts';
 import { site } from '../../content/site.ts';
 import BrandChannels from '../ui/BrandChannels.tsx';
 import BrandLogo from '../ui/BrandLogo.tsx';
 import ChannelIcon, { type ChannelName } from '../ui/ChannelIcon.tsx';
 import styles from './Footer.module.css';
 
-type FooterLink = {
-  href: string;
-  label: string;
-};
+const FOOTER_LINKS = [
+  { href: '/#marcas', label: 'Las marcas' },
+  { href: '/#carta', label: 'La carta' },
+  { href: '/#eventos', label: 'Eventos' },
+  { href: '/#pedidos', label: 'Pedidos' },
+];
 
-const FOOTER_LINKS: FooterLink[] = [
-  { href: '#marcas', label: 'Las marcas' },
-  { href: '#carta', label: 'La carta' },
-  { href: '#eventos', label: 'Eventos' },
-  { href: '#pedidos', label: 'Pedidos' },
+const LEGAL_LINKS = [
+  { href: '/privacidad', label: 'Privacidad' },
+  { href: '/terminos', label: 'Términos y condiciones' },
+  { href: '/reembolsos', label: 'Reembolsos' },
+  { href: '/cookies', label: 'Cookies' },
+  { href: '/licencias', label: 'Licencias' },
+  { href: '/baja', label: 'Baja de correos' },
+  { href: '/reclamos-derechos-autor', label: 'Derechos de autor' },
 ];
 
 export default function Footer() {
@@ -36,8 +43,9 @@ export default function Footer() {
             Café colombiano y repostería artesanal, juntos en una misma pausa.
           </p>
           <p className={styles.status}>
-            {site.status}. Catálogo y precios pendientes de confirmación.
+            {site.status}. Algunos productos y precios están por confirmar.
           </p>
+          <p className={styles.aiNotice}>{AI_CONTENT_NOTICE}</p>
         </div>
 
         <nav className={styles.col} aria-label="Enlaces del pie de página">
@@ -45,7 +53,7 @@ export default function Footer() {
           <ul className={styles.linkList}>
             {FOOTER_LINKS.map((link) => (
               <li key={link.href}>
-                <a href={link.href}>{link.label}</a>
+                <Link to={link.href}>{link.label}</Link>
               </li>
             ))}
           </ul>
@@ -54,6 +62,14 @@ export default function Footer() {
         <div className={styles.col}>
           <h2 className={styles.colTitle}>KMuffis</h2>
           <BrandChannels brandId="kmuffis" variant="footer" />
+          <h2 className={`${styles.colTitle} ${styles.legalTitle}`}>Legal</h2>
+          <ul className={styles.linkList}>
+            {LEGAL_LINKS.map((link) => (
+              <li key={link.href}>
+                <Link to={link.href}>{link.label}</Link>
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div className={styles.col}>
@@ -61,13 +77,17 @@ export default function Footer() {
           <dl className={styles.contactList}>
             <div>
               <dt>WhatsApp</dt>
-              <dd>{site.contact.whatsappDisplay}</dd>
+              <dd>
+                <a href={`https://wa.me/${site.contact.whatsappNumber}`}>
+                  {site.contact.whatsappDisplay}
+                </a>
+              </dd>
             </div>
             <div>
               <dt>Ciudad</dt>
-              <dd>{site.city}</dd>
+              <dd>{site.city}, Colombia</dd>
             </div>
-            {site.contact.social?.length ? (
+            {site.contact.social.length > 0 && (
               <div>
                 <dt>Redes</dt>
                 <dd>
@@ -90,17 +110,25 @@ export default function Footer() {
                   </ul>
                 </dd>
               </div>
-            ) : null}
+            )}
           </dl>
           <p className={styles.note}>
-            Pedidos por WhatsApp: próxima fase. No hay pagos habilitados en este sitio.
+            Pedidos por WhatsApp disponibles. El sitio no procesa pagos. El total final y cualquier
+            domicilio se confirman antes de pagar.
           </p>
+          <button
+            type="button"
+            className={styles.cookieButton}
+            onClick={() => window.dispatchEvent(new Event('regio:open-cookie-settings'))}
+          >
+            Preferencias de cookies
+          </button>
         </div>
       </div>
 
       <div className={`container ${styles.bottom}`}>
         <p>© 2026 Café El Regio · KMuffis. Sitio en construcción.</p>
-        <p>Café colombiano y repostería artesanal.</p>
+        <p>Sin analítica ni rastreadores publicitarios.</p>
       </div>
     </footer>
   );

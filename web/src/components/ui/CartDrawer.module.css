@@ -1,4 +1,4 @@
-﻿.overlay {
+.overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
@@ -28,6 +28,7 @@
   width: min(420px, 92vw);
   max-height: 88vh;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: var(--space-xl);
   position: relative;
   animation: slideUp var(--transition);
@@ -185,6 +186,39 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+}
+
+.consent {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+  line-height: 1.55;
+  cursor: pointer;
+}
+
+.consent input {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.15rem;
+  flex: 0 0 auto;
+}
+
+.consent a {
+  color: var(--color-coffee);
+  font-weight: 700;
+}
+
+.error {
+  margin-top: var(--space-sm);
+  color: #752e15;
+  font-size: var(--text-sm);
+}
+
+.error:empty {
+  display: none;
 }
 
 .checkout {

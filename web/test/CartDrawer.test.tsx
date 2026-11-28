@@ -1,8 +1,13 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { CartProvider } from '../src/context/CartContext.tsx';
 import CartDrawer from '../src/components/ui/CartDrawer.tsx';
 import { formatCOP } from '../src/lib/order.ts';
+
+vi.mock('../src/lib/netlifyForms.ts', () => ({
+  submitNetlifyForm: vi.fn().mockResolvedValue(undefined),
+}));
 
 const STORAGE_KEY = 'cafe_el_regio_cart';
 const WHATSAPP_BASE = 'https://wa.me/573187133439?text=';
@@ -16,9 +21,11 @@ const shown = (value: number) => (formatCOP(value) as string).replace(/\s+/g, ' 
 
 function renderDrawer(isOpen = true, onClose = () => {}) {
   return render(
-    <CartProvider>
-      <CartDrawer isOpen={isOpen} onClose={onClose} />
-    </CartProvider>
+    <MemoryRouter>
+      <CartProvider>
+        <CartDrawer isOpen={isOpen} onClose={onClose} />
+      </CartProvider>
+    </MemoryRouter>
   );
 }
 
@@ -27,6 +34,7 @@ describe('CartDrawer', () => {
     localStorage.clear();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
+    vi.stubGlobal('confirm', vi.fn().mockReturnValue(true));
   });
 
   it('no renderiza nada cuando esta cerrado', () => {
@@ -107,7 +115,7 @@ describe('CartDrawer', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it('genera el deep-link de WhatsApp con los items y limpia el carrito', () => {
+  it('genera el deep-link de WhatsApp con los items y limpia el carrito', async () => {
     seedCart([
       { productId: 'americano', quantity: 2 },
       { productId: 'brownie', quantity: 1 },
@@ -116,9 +124,10 @@ describe('CartDrawer', () => {
     vi.stubGlobal('open', open);
     renderDrawer();
 
+    fireEvent.click(screen.getByLabelText(/acepto los términos/i));
     fireEvent.click(screen.getByRole('button', { name: /whatsapp/i }));
 
-    expect(open).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(open).toHaveBeenCalledTimes(1));
     const url = open.mock.calls[0][0] as string;
     expect(url.startsWith(WHATSAPP_BASE)).toBe(true);
 

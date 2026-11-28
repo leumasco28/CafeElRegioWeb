@@ -1,25 +1,16 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { EVENT_TYPE_CARDS } from '../../content/eventTypes.ts';
 import { site } from '../../content/site.ts';
+import { formatAcceptanceForMessage, type AcceptanceRecord } from '../../lib/acceptance.ts';
 import { buildWhatsAppUrl } from '../../lib/order.ts';
 import SectionHeading from '../ui/SectionHeading.tsx';
-import EventModal from '../ui/EventModal.tsx';
+import EventModal, { type EventSubmission } from '../ui/EventModal.tsx';
 import styles from './Events.module.css';
-
-type EventFormData = {
-  name: string;
-  phone: string;
-  email?: string;
-  eventType: string;
-  eventDate: string;
-  attendees: string;
-  message: string;
-};
 
 export default function Events() {
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
 
-  const handleEventSubmit = (formData: EventFormData) => {
+  const handleEventSubmit = (formData: EventSubmission, acceptance: AcceptanceRecord) => {
     const lines = [
       `Solicitud de evento - ${site.name}`,
       `Nombre: ${formData.name}`,
@@ -29,27 +20,20 @@ export default function Events() {
       formData.eventDate ? `Fecha: ${formData.eventDate}` : null,
       formData.attendees ? `Asistentes (aprox.): ${formData.attendees}` : null,
       formData.message ? `Mensaje: ${formData.message}` : null,
+      formatAcceptanceForMessage(acceptance),
     ].filter(Boolean);
 
-    const message = lines.join('\n');
-    const url = buildWhatsAppUrl(message);
-
+    const url = buildWhatsAppUrl(lines.join('\n'));
     if (url) {
       const win = window.open(url, '_blank', 'noopener,noreferrer');
-      if (!win) {
-        window.location.href = url;
-      }
-    } else {
-      console.log('Datos del evento (WhatsApp no disponible):', formData);
+      if (!win) window.location.href = url;
     }
-
     setIsEventModalOpen(false);
   };
 
   return (
     <section id="eventos" className={`section ${styles.section}`} aria-labelledby="eventos-title">
       <div className={styles.texture} aria-hidden="true" />
-
       <div className={`container ${styles.inner}`}>
         <div className={styles.head}>
           <SectionHeading
@@ -63,7 +47,6 @@ export default function Events() {
             Hablemos de tu evento
           </button>
         </div>
-
         <ul className={styles.grid}>
           {EVENT_TYPE_CARDS.map((event) => (
             <li key={event.number} className={styles.card}>
@@ -75,12 +58,10 @@ export default function Events() {
             </li>
           ))}
         </ul>
-
         <p className={styles.note}>
           Paquetes, cobertura y disponibilidad pendientes de confirmación.
         </p>
       </div>
-
       <EventModal
         isOpen={isEventModalOpen}
         onClose={() => setIsEventModalOpen(false)}

@@ -1,0 +1,14 @@
+Avisos de terceros - Café El Regio
+
+Este sitio usa bibliotecas de código abierto en tiempo de ejecución y de compilación.
+Las dependencias y sus licencias se registran en package.json y package-lock.json del proyecto.
+
+Licencias observadas en el inventario del proyecto: MIT, Apache-2.0, ISC, BSD-2-Clause,
+BSD-3-Clause, BlueOak-1.0.0, MPL-2.0 y CC-BY-4.0. Las dos últimas aparecen en
+herramientas de compilación, no en el código entregado al navegador.
+
+No se cargan fuentes web ni SDKs de analítica de terceros. Las marcas, logos, fotos y
+videos pertenecen a sus respectivos titulares y requieren autorización para su reutilización.
+
+Inventario detallado y condiciones de redistribución: revisar los archivos de licencia
+incluidos en node_modules y el código fuente del proyecto.

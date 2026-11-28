@@ -18,6 +18,7 @@
   pointer-events: none;
 }
 
+/* Recorta solo el resplandor; la tarjeta puede desplegar su panel sin cortes. */
 .glowClip {
   position: absolute;
   inset: 0;
@@ -370,6 +371,41 @@
   pointer-events: none;
 }
 
+.mobileCTA {
+  text-align: center;
+  padding: clamp(1rem, 3vw, 1.5rem) 0;
+}
+
+.mobileCTAButton {
+  display: inline-block;
+  padding: 0.85rem 2rem;
+  background: var(--color-tiza);
+  color: var(--color-ink);
+  font-family: var(--font-label);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-stage);
+  transition:
+    transform var(--transition),
+    background-color var(--transition);
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.mobileCTAButton:hover {
+  background: var(--color-tiza-soft);
+  transform: translateY(-2px);
+}
+
+.mobileCTAButton:focus-visible {
+  outline: 3px solid var(--color-tiza);
+  outline-offset: 4px;
+}
+
 @media (max-width: 920px) {
   .grid {
     grid-template-columns: 1fr;
@@ -477,59 +513,44 @@
   display: none;
 }
 
-/* Christmas decorations - subtle snowflakes/sparkles */
-.christmasDecorations {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 2;
-  overflow: hidden;
+/* Mobile-only CTA button */
+.mobileCTA {
+  text-align: center;
+  padding: clamp(1rem, 3vw, 1.5rem) 0;
 }
 
-.snowflake {
-  position: absolute;
-  font-size: clamp(1rem, 2vw, 1.5rem);
-  color: rgba(255, 255, 255, 0.6);
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
-  animation: snowfall 8s ease-in-out infinite;
-  user-select: none;
+.mobileCTAButton {
+  display: inline-block;
+  padding: 0.85rem 2rem;
+  background: var(--color-tiza);
+  color: var(--color-ink);
+  font-family: var(--font-label);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-stage);
+  transition:
+    transform var(--transition),
+    background-color var(--transition);
+  z-index: 10;
+  white-space: nowrap;
 }
 
-.sparkle {
-  position: absolute;
-  font-size: clamp(0.75rem, 1.5vw, 1rem);
-  color: rgba(233, 185, 73, 0.8);
-  text-shadow: 0 0 6px rgba(233, 185, 73, 0.9);
-  animation: sparkle 3s ease-in-out infinite;
-  user-select: none;
+.mobileCTAButton:hover {
+  background: var(--color-tiza-soft);
+  transform: translateY(-2px);
 }
 
-@keyframes snowfall {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 0.6;
-  }
-  50% {
-    transform: translateY(20px) rotate(180deg);
-    opacity: 0.9;
-  }
+.mobileCTAButton:focus-visible {
+  outline: 3px solid var(--color-tiza);
+  outline-offset: 4px;
 }
 
-@keyframes sparkle {
-  0%,
-  100% {
-    transform: scale(1) rotate(0deg);
-    opacity: 0.5;
-  }
-  50% {
-    transform: scale(1.3) rotate(90deg);
-    opacity: 1;
-  }
-}
-
-/* Copy overlay on video - transparent background */
-.copyOverlay {
+/* Desktop copy overlay on video - transparent background */
+.desktopCopyOverlay {
   position: absolute;
   inset: 0;
   display: flex;
@@ -538,89 +559,53 @@
   padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 4vw, 3rem);
   z-index: 4;
   pointer-events: none;
+  background: rgba(0, 0, 0, 0.3);
 }
 
-.copyContent {
-  max-width: min(600px, 90%);
-  pointer-events: auto;
-}
-
-.copyOverlay .kicker {
+.desktopCopyOverlay .kicker {
   color: var(--color-tiza-soft);
 }
 
-.copyOverlay .title {
+.desktopCopyOverlay .title {
   max-width: none;
   color: var(--color-cream);
   text-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
 }
 
-.copyOverlay .title em {
+.desktopCopyOverlay .title em {
   color: var(--color-tiza);
 }
 
-.copyOverlay .lead {
+.desktopCopyOverlay .lead {
   color: rgba(247, 241, 226, 0.95);
   text-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
   max-width: 100%;
 }
 
-.copyOverlay .leadSecondary {
+.desktopCopyOverlay .leadSecondary {
   color: rgba(247, 241, 226, 0.85);
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
   max-width: 100%;
 }
 
-.copyOverlay .actions {
+.desktopCopyOverlay .actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
 }
 
-.copyOverlay .primary,
-.copyOverlay .secondary,
-.copyOverlay .outline {
+.desktopCopyOverlay .primary,
+.desktopCopyOverlay .secondary,
+.desktopCopyOverlay .outline {
   pointer-events: auto;
 }
 
-.copyOverlay .highlights {
+.desktopCopyOverlay .highlights {
   pointer-events: auto;
 }
 
-.copyOverlay .notice {
+.desktopCopyOverlay .notice {
   pointer-events: auto;
-}
-
-/* KMuffis kcard at bottom right - smaller */
-.christmasKcardBottom {
-  position: absolute;
-  bottom: clamp(1rem, 2vw, 1.5rem);
-  right: clamp(1rem, 2vw, 1.5rem);
-  z-index: 5;
-  --kcard-tilt: 2deg;
-  transform: rotate(var(--kcard-tilt));
-  pointer-events: auto;
-  width: min(200px, 20vw);
-  opacity: 0.95;
-}
-
-.christmasKcardBottom .kcardLogo {
-  width: 36px;
-  height: 36px;
-}
-
-.christmasKcardBottom .kcardText strong {
-  font-size: 0.9rem;
-}
-
-.christmasKcardBottom .kcardText small {
-  font-size: var(--text-2xs);
-}
-
-.christmasKcardBottom .kcardToggle {
-  min-height: 30px;
-  font-size: var(--text-2xs);
-  padding: 0.25rem 0.5rem;
 }
 
 /* Mobile adjustments for Christmas */
@@ -631,6 +616,7 @@
     min-height: 100dvh;
   }
 
+  /* Hide desktop video, show mobile video */
   .christmasVideoDesktop {
     display: none;
   }
@@ -647,88 +633,31 @@
     min-height: 100dvh;
   }
 
-  .copyOverlay {
-    padding: clamp(1.5rem, 4vh, 2.5rem) clamp(1rem, 3vw, 1.5rem);
-    justify-content: flex-start;
-    padding-top: clamp(6rem, 15vh, 8rem);
+  .mobileCTA {
+    padding: clamp(1rem, 3vh, 1.5rem) 0;
   }
 
-  .copyContent {
-    max-width: 100%;
+  .mobileCTAButton {
+    padding: 0.85rem 2rem;
+    font-size: var(--text-sm);
   }
 
-  .copyOverlay .title {
-    font-size: clamp(var(--text-2xl), 6vw, var(--text-3xl));
-    line-height: 1.1;
-  }
-
-  .copyOverlay .lead {
-    font-size: clamp(var(--text-base), 3vw, var(--text-lg));
-  }
-
-  .copyOverlay .leadSecondary {
-    font-size: clamp(var(--text-sm), 2.5vw, var(--text-base));
-  }
-
-  .copyOverlay .actions {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .copyOverlay .primary,
-  .copyOverlay .secondary,
-  .copyOverlay .outline {
-    width: 100%;
-    text-align: center;
-  }
-
-  .videoCtaBottom {
-    bottom: clamp(1rem, 2vh, 1.5rem);
-    left: clamp(1rem, 3vw, 1.5rem);
-    right: clamp(1rem, 3vw, 1.5rem);
-    transform: none;
-    text-align: center;
-    padding: 1rem 1.5rem;
-  }
-
-  .christmasKcardBottom {
-    bottom: clamp(2rem, 3vh, 3.5rem);
-    right: clamp(0.75rem, 2vw, 1rem);
-    width: min(180px, 40vw);
-    opacity: 0.9;
-  }
-
-  .christmasKcardBottom .kcardLogo {
-    width: 32px;
-    height: 32px;
-  }
-
-  .christmasKcardBottom .kcardText strong {
-    font-size: 0.8rem;
-  }
-
-  .christmasKcardBottom .kcardToggle {
-    min-height: 28px;
-    font-size: var(--text-2xs);
-    padding: 0.2rem 0.4rem;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .snowflake,
-    .sparkle {
-      animation: none;
-    }
+  .desktopCopyOverlay {
+    display: none;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .christmasVideoDesktop,
-  .christmasVideoMobile {
-    animation: none;
+@media (max-width: 560px) {
+  .title {
+    max-width: 18ch;
   }
 
-  .snowflake,
-  .sparkle {
-    animation: none;
+  .actions {
+    flex-direction: column;
+  }
+
+  .primary,
+  .secondary {
+    width: 100%;
   }
 }

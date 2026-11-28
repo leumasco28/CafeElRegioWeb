@@ -1,14 +1,17 @@
 ﻿import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { CartProvider } from '../src/context/CartContext.tsx';
 import Header from '../src/components/layout/Header.tsx';
 
 describe('Header', () => {
   it('renderiza el nombre del sitio y los cinco enlaces de navegacion', () => {
     render(
-      <CartProvider>
-        <Header onToggleCart={() => {}} />
-      </CartProvider>
+      <MemoryRouter>
+        <CartProvider>
+          <Header onToggleCart={() => {}} />
+        </CartProvider>
+      </MemoryRouter>
     );
 
     expect(screen.getByRole('link', { name: /caf.*regio.*inicio/i })).toBeInTheDocument();
@@ -20,9 +23,11 @@ describe('Header', () => {
 
   it('abre y cierra el menu movil con el boton de hamburguesa', () => {
     render(
-      <CartProvider>
-        <Header onToggleCart={() => {}} />
-      </CartProvider>
+      <MemoryRouter>
+        <CartProvider>
+          <Header onToggleCart={() => {}} />
+        </CartProvider>
+      </MemoryRouter>
     );
 
     const button = screen.getByRole('button', { name: /abrir men/i });
@@ -37,9 +42,11 @@ describe('Header', () => {
 
   it('renderiza el boton del carrito con contador de items', () => {
     render(
-      <CartProvider>
-        <Header onToggleCart={() => {}} />
-      </CartProvider>
+      <MemoryRouter>
+        <CartProvider>
+          <Header onToggleCart={() => {}} />
+        </CartProvider>
+      </MemoryRouter>
     );
 
     expect(screen.getByRole('button', { name: /carrito/i })).toBeInTheDocument();

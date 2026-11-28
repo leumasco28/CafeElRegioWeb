@@ -17,6 +17,35 @@
     <link rel="manifest" href="/site.webmanifest" />
   </head>
   <body>
+    <!-- Formularios estáticos para detección de Netlify Forms en esta SPA. -->
+    <form name="terms-acceptance" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input name="bot-field" />
+      <input name="acceptanceId" />
+      <input name="acceptedAt" />
+      <input name="termsVersion" />
+      <input name="context" />
+      <input name="name" />
+      <input name="contact" />
+      <input name="termsAccepted" />
+      <input name="privacyAccepted" />
+      <input name="marketingAccepted" />
+    </form>
+    <form name="unsubscribe" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input name="bot-field" />
+      <input name="email" type="email" />
+      <input name="requestedAt" />
+      <input name="scope" />
+    </form>
+    <form name="copyright-claim" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input name="bot-field" />
+      <input name="name" />
+      <input name="email" type="email" />
+      <input name="work" />
+      <input name="location" />
+      <textarea name="claim"></textarea>
+      <input name="submittedAt" />
+      <input name="goodFaith" />
+    </form>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

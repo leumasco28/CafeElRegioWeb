@@ -1,4 +1,8 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import { AI_CONTENT_NOTICE } from '../../content/legal.ts';
+import { formatAcceptanceForMessage, recordTermsAcceptance } from '../../lib/acceptance.ts';
+import { buildWhatsAppUrl } from '../../lib/order.ts';
 import styles from './ChristmasCardSection.module.css';
 
 /**
@@ -15,6 +19,9 @@ export default function ChristmasCardSection() {
 
   // Estado para nota de regalo
   const [giftNote, setGiftNote] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
 
   // Datos de empaques navideños
   const packagingOptions = useMemo(
@@ -78,10 +85,9 @@ export default function ChristmasCardSection() {
       {
         id: 'jabon-cafe',
         name: 'Jabón de Café',
-        description:
-          'Hecho a mano, exfoliante natural con granos de café y sello central de corazón.',
+        description: 'Jabón elaborado con granos de café y sello central de corazón.',
         price: 13000,
-        tag: '100% Natural',
+        tag: 'Elaboración artesanal',
         image: '/assets/christmas/07_jabon_de_cafe.png',
       },
       {
@@ -129,44 +135,16 @@ export default function ChristmasCardSection() {
     setSelectedPackaging(null);
     setProductQuantities({});
     setGiftNote('');
+    setStatusMessage('Selección reiniciada.');
   };
 
-  const handleCopyOrder = () => {
+  const buildKitMessage = () => {
     const selectedPkg = packagingOptions.find((p) => p.id === selectedPackaging);
     const selectedProducts = productItems
       .filter((p) => (productQuantities[p.id] || 0) > 0)
       .map((p) => `${p.name} x${productQuantities[p.id]}`);
 
-    let text = '📦 Pedido Navidad - Café El Regio\n\n';
-    if (selectedPkg) {
-      text += `Empaque: ${selectedPkg.name} (${selectedPkg.subtitle}) - $${selectedPkg.price.toLocaleString('es-CO')}\n`;
-    }
-    if (selectedProducts.length > 0) {
-      text += '\nProductos:\n';
-      selectedProducts.forEach((p) => (text += `• ${p}\n`));
-    }
-    if (giftNote.trim()) {
-      text += `\n📝 Nota: ${giftNote}\n`;
-    }
-    const total = calculateTotal();
-    text += `\n💰 Total: $${total.toLocaleString('es-CO')} COP`;
-
-    navigator.clipboard.writeText(text);
-    alert('¡Pedido copiado al portapapeles!');
-  };
-
-  const handleWhatsAppOrder = () => {
-    const selectedPkg = packagingOptions.find((p) => p.id === selectedPackaging);
-    const selectedProducts = productItems
-      .filter((p) => (productQuantities[p.id] || 0) > 0)
-      .map((p) => `${p.name} x${productQuantities[p.id]}`);
-
-    if (!selectedPkg && selectedProducts.length === 0) {
-      alert('Por favor selecciona al menos un empaque o producto');
-      return;
-    }
-
-    let text = 'Hola El Regio Café, quisiera pedir mi Kit Navideño:\n\n';
+    let text = 'Hola Café El Regio, quisiera consultar este kit navideño:\n\n';
     if (selectedPkg) {
       text += `📦 Empaque: ${selectedPkg.name} (${selectedPkg.subtitle}) - $${selectedPkg.price.toLocaleString('es-CO')}\n`;
     }
@@ -174,14 +152,49 @@ export default function ChristmasCardSection() {
       text += '\n🎁 Productos:\n';
       selectedProducts.forEach((p) => (text += `• ${p}\n`));
     }
-    if (giftNote.trim()) {
-      text += `\n📝 Nota para la tarjeta: ${giftNote}\n`;
-    }
-    const total = calculateTotal();
-    text += `\n💰 Total estimado: $${total.toLocaleString('es-CO')} COP`;
+    if (giftNote.trim()) text += `\n📝 Nota para la tarjeta: ${giftNote.trim()}\n`;
+    text += `\n💰 Total estimado: $${calculateTotal().toLocaleString('es-CO')} COP`;
+    text += '\nEntiendo que disponibilidad, domicilio y total final se confirman antes de pagar.';
+    return text;
+  };
 
-    const url = `https://wa.me/573187133439?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
+  const handleCopyOrder = async () => {
+    try {
+      await navigator.clipboard.writeText(buildKitMessage());
+      setStatusMessage('Pedido copiado al portapapeles.');
+    } catch {
+      setStatusMessage('No se pudo copiar. Selecciona el resumen y cópialo manualmente.');
+    }
+  };
+
+  const handleWhatsAppOrder = async () => {
+    if (!selectedPackaging && totalItems === 0) {
+      setStatusMessage('Selecciona al menos un empaque o producto.');
+      return;
+    }
+    if (!termsAccepted) {
+      setStatusMessage('Acepta los términos y la política de privacidad para continuar.');
+      document.getElementById('kit-terms')?.focus();
+      return;
+    }
+
+    setSubmitting(true);
+    setStatusMessage('');
+    try {
+      const acceptance = await recordTermsAcceptance({ context: 'kit-navideno' });
+      const message = `${buildKitMessage()}\n${formatAcceptanceForMessage(acceptance)}`;
+      const url = buildWhatsAppUrl(message);
+      if (!url) throw new Error('WhatsApp no disponible');
+      const win = window.open(url, '_blank', 'noopener,noreferrer');
+      if (!win) window.location.assign(url);
+      setStatusMessage('Aceptación registrada. Continúa el envío en WhatsApp.');
+    } catch {
+      setStatusMessage(
+        'No pudimos registrar la aceptación. Revisa la conexión e inténtalo de nuevo; tu selección se conserva.'
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   // Cálculos memoizados
@@ -198,9 +211,7 @@ export default function ChristmasCardSection() {
     }, 0);
   }, [productQuantities, productItems]);
 
-  const totalItems = useMemo(() => {
-    return Object.values(productQuantities).reduce((sum, qty) => sum + qty, 0);
-  }, [productQuantities]);
+  const totalItems = Object.values(productQuantities).reduce((sum, qty) => sum + qty, 0);
 
   const calculateTotal = () => packagingTotal + productsTotal;
 
@@ -210,7 +221,7 @@ export default function ChristmasCardSection() {
   // Floating summary box state
   const [isFloating, setIsFloating] = useState(false);
   const [showFloating, setShowFloating] = useState(false);
-  const sectionRef = useRef<HTMLSectionElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
   const placeholderRef = useRef<HTMLDivElement>(null);
 
@@ -236,7 +247,7 @@ export default function ChristmasCardSection() {
 
     observer.observe(placeholder);
     return () => observer.disconnect();
-  }, [placeholder]);
+  }, [placeholderRef]);
 
   // Handle scroll for floating animation
   useEffect(() => {
@@ -267,8 +278,53 @@ export default function ChristmasCardSection() {
   }, [showFloating]);
 
   return (
-    <section id="carta-navidenas" className={styles.section} ref={sectionRef}>
+    <section
+      id="cajas-navidenas"
+      className={styles.section}
+      ref={sectionRef}
+      aria-labelledby="christmas-title"
+    >
       <div className={styles.container}>
+        {/* Tira de ornamentos navideños decorativos (solo visual) */}
+        <div className={styles.ornamentBar} aria-hidden="true">
+          {Array.from({ length: 11 }).map((_, index) => (
+            <span
+              key={index}
+              className={styles.ornament}
+              style={{ animationDelay: `${index * 0.18}s` }}
+            >
+              <svg viewBox="0 0 40 60" width="34" height="52" xmlns="http://www.w3.org/2000/svg">
+                <line x1="20" y1="0" x2="20" y2="14" stroke="#3e2723" strokeWidth="1.5" />
+                <circle
+                  cx="20"
+                  cy="34"
+                  r="14"
+                  fill={index % 3 === 0 ? '#9b2226' : index % 3 === 1 ? '#1b4332' : '#d4af37'}
+                />
+                <circle cx="20" cy="34" r="14" fill="none" stroke="#3e2723" strokeWidth="1.2" />
+                <circle cx="14" cy="29" r="3" fill="rgba(255,255,255,0.35)" />
+                <path
+                  d="M8 48 L20 56 L32 48"
+                  stroke="#d4af37"
+                  strokeWidth="2"
+                  fill="none"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </span>
+          ))}
+        </div>
+        <div className={styles.snowflakes} aria-hidden="true">
+          {['❄', '✦', '✶', '❄', '✦', '✶', '❄'].map((glyph, index) => (
+            <span
+              key={index}
+              className={styles.snowflake}
+              style={{ animationDelay: `${index * 1.3}s`, left: `${6 + index * 13}%` }}
+            >
+              {glyph}
+            </span>
+          ))}
+        </div>
         <div className={styles.contentWrapper}>
           {/* Header Section */}
           <header className={styles.header}>
@@ -463,8 +519,11 @@ export default function ChristmasCardSection() {
             </div>
 
             {/* Main Title */}
-            <h1 className={styles.mainTitle}>CARTA NAVIDEÑA</h1>
+            <h2 id="christmas-title" className={styles.mainTitle}>
+              CARTA NAVIDEÑA
+            </h2>
             <p className={styles.subTitleCentered}>— PERSONALIZA TU KIT —</p>
+            <p className={styles.aiNotice}>{AI_CONTENT_NOTICE}</p>
 
             {/* Emotional Subtitle */}
             <p className={styles.emotionalSubtitle}>
@@ -478,7 +537,11 @@ export default function ChristmasCardSection() {
                 Comenzar a armar mi kit
               </a>
               <a
-                href="https://wa.me/573187133439?text=Hola%20El%20Regio%20Caf%C3%A9%2C%20quisiera%20informaci%C3%B3n%20sobre%20los%20Kits%20Navide%C3%B1os."
+                href={
+                  buildWhatsAppUrl(
+                    'Hola Café El Regio, quisiera información sobre los kits navideños.'
+                  ) ?? '#'
+                }
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.secondaryCTA}
@@ -502,19 +565,12 @@ export default function ChristmasCardSection() {
               {packagingOptions.map((pkg) => {
                 const isSelected = selectedPackaging === pkg.id;
                 return (
-                  <div
+                  <button
+                    type="button"
                     key={pkg.id}
                     className={`${styles.packagingCard} ${isSelected ? styles.selected : ''}`}
                     onClick={() => handlePackagingSelect(pkg.id)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        handlePackagingSelect(pkg.id);
-                      }
-                    }}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={pkg.name}
+                    aria-label={`${pkg.name}, ${pkg.subtitle}, $${pkg.price.toLocaleString('es-CO')} COP`}
                     aria-pressed={isSelected}
                   >
                     <div className={styles.badgeWrapper}>
@@ -525,7 +581,15 @@ export default function ChristmasCardSection() {
                     </div>
 
                     <div className={styles.iconWrapper}>
-                      <img src={pkg.image} alt={pkg.name} className={styles.packagingImage} />
+                      <img
+                        src={pkg.image}
+                        alt={`${pkg.name}: ${pkg.subtitle}`}
+                        width="162"
+                        height="209"
+                        loading="lazy"
+                        decoding="async"
+                        className={styles.packagingImage}
+                      />
                     </div>
 
                     <div className={styles.infoWrapper}>
@@ -537,7 +601,7 @@ export default function ChristmasCardSection() {
                         <span className={styles.price}>${pkg.price.toLocaleString('es-CO')}</span>
                       </div>
                     </div>
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -587,7 +651,15 @@ export default function ChristmasCardSection() {
                   >
                     <div className={styles.productInfo}>
                       <div className={styles.iconWrapper}>
-                        <img src={prod.image} alt={prod.name} className={styles.productImage} />
+                        <img
+                          src={prod.image}
+                          alt={`${prod.name}: ${prod.description}`}
+                          width="163"
+                          height="111"
+                          loading="lazy"
+                          decoding="async"
+                          className={styles.productImage}
+                        />
                       </div>
                       <div>
                         <div className={styles.productHeader}>
@@ -639,6 +711,7 @@ export default function ChristmasCardSection() {
             className={styles.summarySection}
             ref={placeholderRef}
             aria-hidden={showFloating}
+            inert={showFloating ? true : undefined}
           >
             <div
               className={`${styles.summaryCard} ${showFloating ? styles.summaryPlaceholder : ''}`}
@@ -737,8 +810,29 @@ export default function ChristmasCardSection() {
                       ? `${totalItems} producto${totalItems !== 1 ? 's' : ''} seleccionado${totalItems !== 1 ? 's' : ''}${selectedPackaging ? ' + empaque' : ''}`
                       : 'Selecciona tu empaque y tus productos favoritos'}
                   </p>
+                  <p className={styles.badgeText}>
+                    Valores de referencia. Confirmar disponibilidad, total final y domicilio por
+                    WhatsApp.
+                  </p>
                 </div>
 
+                <label className={styles.consent} htmlFor="kit-terms">
+                  <input
+                    id="kit-terms"
+                    type="checkbox"
+                    checked={termsAccepted}
+                    onChange={(event) => {
+                      setTermsAccepted(event.target.checked);
+                      setStatusMessage('');
+                    }}
+                    required
+                  />
+                  <span>
+                    Acepto los <Link to="/terminos">términos</Link> y la{' '}
+                    <Link to="/privacidad">política de privacidad</Link>. Registraré esta
+                    aceptación.
+                  </span>
+                </label>
                 <div className={styles.actionButtons}>
                   <button
                     type="button"
@@ -753,12 +847,17 @@ export default function ChristmasCardSection() {
                     type="button"
                     className={styles.whatsappButton}
                     onClick={handleWhatsAppOrder}
-                    disabled={!selectedPackaging && !isAnyProductSelected}
+                    disabled={
+                      (!selectedPackaging && !isAnyProductSelected) || !termsAccepted || submitting
+                    }
                   >
                     <span>📱</span>
                     <span>Pedir esta caja por WhatsApp</span>
                   </button>
                 </div>
+                <p className={styles.status} aria-live="polite">
+                  {statusMessage}
+                </p>
               </div>
             </div>
           </section>
@@ -844,22 +943,37 @@ export default function ChristmasCardSection() {
                       ${calculateTotal().toLocaleString('es-CO')} COP
                     </span>
                   </div>
+                  <label className={styles.consent} htmlFor="kit-terms-floating">
+                    <input
+                      id="kit-terms-floating"
+                      type="checkbox"
+                      checked={termsAccepted}
+                      onChange={(event) => {
+                        setTermsAccepted(event.target.checked);
+                        setStatusMessage('');
+                      }}
+                      required
+                    />
+                    <span>Acepto términos y privacidad.</span>
+                  </label>
                   <div className={styles.floatingActionButtons}>
                     <button
                       type="button"
                       className={styles.floatingCopyButton}
                       onClick={handleCopyOrder}
                       disabled={!selectedPackaging && !isAnyProductSelected}
+                      aria-label="Copiar pedido"
                     >
-                      <span>📋</span>
+                      <span aria-hidden="true">📋</span>
                     </button>
                     <button
                       type="button"
                       className={styles.floatingWhatsAppButton}
                       onClick={handleWhatsAppOrder}
-                      disabled={!selectedPackaging && !isAnyProductSelected}
+                      disabled={(!selectedPackaging && !isAnyProductSelected) || !termsAccepted}
+                      aria-label="Pedir esta caja por WhatsApp"
                     >
-                      <span>📱</span>
+                      <span aria-hidden="true">📱</span>
                     </button>
                   </div>
                 </div>

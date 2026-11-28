@@ -1,22 +1,13 @@
-﻿/**
- * Cajón del carrito de compras (Fase 2).
- *
- * Muestra los ítems agregados, permite ajustar cantidades, eliminar ítems y
- * generar el enlace de WhatsApp para enviar el pedido. No almacena ni envía
- * datos de pago.
- */
-
-import { useCallback, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { products } from '../../content/catalog.ts';
 import { site } from '../../content/site.ts';
+import { formatAcceptanceForMessage, recordTermsAcceptance } from '../../lib/acceptance.ts';
 import { buildOrderMessage, buildWhatsAppUrl, formatCOP, type OrderItem } from '../../lib/order.ts';
 import { useCart } from '../../context/CartContext.tsx';
 import styles from './CartDrawer.module.css';
 
-type CartDrawerProps = {
-  isOpen: boolean;
-  onClose: () => void;
-};
+type CartDrawerProps = { isOpen: boolean; onClose: () => void };
 
 function CartItemRow({
   productId,
@@ -31,23 +22,20 @@ function CartItemRow({
   onDecrease: () => void;
   onRemove: () => void;
 }) {
-  const product = products.find((p) => p.id === productId);
+  const product = products.find((item) => item.id === productId);
   const name = product?.name ?? productId;
   const price = typeof product?.price === 'number' ? product.price : null;
-
   return (
     <li className={styles.cartItem}>
       <div className={styles.itemInfo}>
         <strong className={styles.itemName}>{name}</strong>
-        {typeof price === 'number' ? (
-          <span className={styles.itemPrice}>{formatCOP(price)}</span>
-        ) : (
-          <span className={styles.itemPrice} style={{ color: 'var(--color-muted)' }}>
-            precio por confirmar
-          </span>
-        )}
+        <span
+          className={styles.itemPrice}
+          style={price === null ? { color: 'var(--color-muted)' } : undefined}
+        >
+          {price === null ? 'Precio por confirmar' : formatCOP(price)}
+        </span>
       </div>
-
       <div className={styles.itemControls}>
         <button
           type="button"
@@ -57,7 +45,9 @@ function CartItemRow({
         >
           −
         </button>
-        <span className={styles.qtyValue}>{quantity}</span>
+        <span className={styles.qtyValue} aria-label={`Cantidad: ${quantity}`}>
+          {quantity}
+        </span>
         <button
           type="button"
           className={styles.qtyButton}
@@ -82,61 +72,116 @@ function CartItemRow({
 export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const { items, totalLabel, addItem, removeItem, setQuantity, clearCart } = useCart();
   const [redirecting, setRedirecting] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [message, setMessage] = useState('');
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const termsRef = useRef<HTMLInputElement | null>(null);
 
-  const handleCheckout = useCallback(() => {
-    if (items.length === 0) return;
-    setRedirecting(true);
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    panelRef.current?.querySelector<HTMLButtonElement>('button')?.focus();
 
-    const orderItems: OrderItem[] = items.map((cartItem) => {
-      const product = products.find((p) => p.id === cartItem.productId);
-      return {
-        name: product?.name ?? cartItem.productId,
-        quantity: cartItem.quantity,
-        price: typeof product?.price === 'number' ? product.price : null,
-      };
-    });
-
-    const message = buildOrderMessage({ items: orderItems });
-    const url = message ? buildWhatsAppUrl(message) : null;
-
-    if (url) {
-      const win = window.open(url, '_blank', 'noopener,noreferrer');
-      if (!win) {
-        window.location.href = url;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !redirecting) {
+        onClose();
+        return;
       }
-      setRedirecting(false);
+      if (event.key !== 'Tab') return;
+      const focusable = panelRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), [tabindex="0"]'
+      );
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = previousOverflow;
+      previousFocus?.focus();
+    };
+  }, [isOpen, onClose, redirecting]);
+
+  const handleCheckout = async () => {
+    if (items.length === 0) return;
+    if (!termsAccepted) {
+      setMessage('Acepta los términos y la política de privacidad para continuar.');
+      termsRef.current?.focus();
+      return;
+    }
+
+    setRedirecting(true);
+    setMessage('');
+    try {
+      const acceptance = await recordTermsAcceptance({ context: 'pedido' });
+      const orderItems: OrderItem[] = items.map((cartItem) => {
+        const product = products.find((item) => item.id === cartItem.productId);
+        return {
+          name: product?.name ?? cartItem.productId,
+          quantity: cartItem.quantity,
+          price: typeof product?.price === 'number' ? product.price : null,
+        };
+      });
+      const order = buildOrderMessage({ items: orderItems });
+      const url = order
+        ? buildWhatsAppUrl(`${order}\n${formatAcceptanceForMessage(acceptance)}`)
+        : null;
+      if (!url) throw new Error('Pedidos no disponibles');
+      const win = window.open(url, '_blank', 'noopener,noreferrer');
+      if (!win) window.location.href = url;
       clearCart();
-    } else {
+      setRedirecting(false);
+    } catch {
+      setMessage(
+        'No pudimos registrar la aceptación. Revisa la conexión e inténtalo de nuevo; tu carrito se conserva.'
+      );
       setRedirecting(false);
     }
-  }, [items, clearCart]);
+  };
+
+  const handleClear = () => {
+    if (window.confirm('¿Vaciar todos los productos del carrito?')) clearCart();
+  };
 
   if (!isOpen) return null;
 
   return (
     <div
       className={styles.overlay}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="cart-title"
-      onClick={(event) => {
-        if (event.target === event.currentTarget) onClose();
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget && !redirecting) onClose();
       }}
     >
-      <div className={styles.panel}>
+      <div
+        className={styles.panel}
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cart-title"
+      >
         <button
           type="button"
           className={styles.close}
           onClick={onClose}
           aria-label="Cerrar carrito"
+          disabled={redirecting}
         >
           ×
         </button>
-
         <h2 id="cart-title" className={styles.title}>
           Tu carrito
         </h2>
-
         {items.length === 0 ? (
           <div className={styles.empty}>
             <p className={styles.emptyText}>Tu carrito está vacío.</p>
@@ -158,30 +203,54 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 />
               ))}
             </ul>
-
             <div className={styles.total}>
-              <span className={styles.totalLabel}>Total</span>
+              <span className={styles.totalLabel}>Total estimado</span>
               <span className={styles.totalValue}>{totalLabel ?? 'Precio por confirmar'}</span>
             </div>
-
+            <label className={styles.consent} htmlFor="cart-terms">
+              <input
+                id="cart-terms"
+                ref={termsRef}
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={(event) => {
+                  setTermsAccepted(event.target.checked);
+                  setMessage('');
+                }}
+                aria-invalid={!!message && !termsAccepted}
+                required
+              />
+              <span>
+                Acepto los{' '}
+                <Link to="/terminos" target="_blank">
+                  términos
+                </Link>{' '}
+                y la{' '}
+                <Link to="/privacidad" target="_blank">
+                  política de privacidad
+                </Link>
+                . Registraré la fecha y versión de esta aceptación.
+              </span>
+            </label>
             <button
               type="button"
               className={styles.checkout}
               disabled={redirecting}
               onClick={handleCheckout}
             >
-              {redirecting ? 'Abriendo WhatsApp…' : 'Enviar pedido por WhatsApp'}
+              {redirecting ? 'Registrando aceptación…' : 'Continuar a WhatsApp'}
             </button>
-
-            <button type="button" className={styles.clear} onClick={clearCart}>
+            <button type="button" className={styles.clear} onClick={handleClear}>
               Vaciar carrito
             </button>
           </>
         )}
-
         <p className={styles.note}>
-          Los pedidos se coordinan por WhatsApp ({site.contact.whatsappDisplay}). Los pagos se
-          acuerdan directamente con el equipo de Café El Regio.
+          El pedido se coordina por WhatsApp ({site.contact.whatsappDisplay}). El total final y
+          cualquier domicilio se confirman antes de pagar; no hay cargos ocultos.
+        </p>
+        <p className={styles.error} aria-live="polite">
+          {message}
         </p>
       </div>
     </div>

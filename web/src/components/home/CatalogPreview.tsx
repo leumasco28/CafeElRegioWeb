@@ -75,9 +75,12 @@ function ProductCard({ item }: ProductCardProps) {
         type="button"
         className={styles.addButton}
         onClick={() => addItem(item.id)}
-        aria-label={`Agregar ${item.name} al carrito`}
+        aria-label={
+          item.available ? `Agregar ${item.name} al carrito` : `${item.name}: precio por confirmar`
+        }
+        disabled={!item.available}
       >
-        Agregar
+        {item.available ? 'Agregar' : 'Por confirmar'}
       </button>
     </li>
   );

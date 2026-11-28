@@ -44,7 +44,7 @@ export const categoriesById: CategoriesById = Object.fromEntries(
 );
 
 export const catalogNote =
-  'Carta con precios confirmados por el negocio. Los productos sin precio están pendientes de confirmación.';
+  'Algunos precios están confirmados y otros pendientes. La disponibilidad y el total final, incluido cualquier domicilio, se confirman por WhatsApp antes de pagar.';
 
 const product = (
   id: string,
@@ -98,14 +98,11 @@ export const products: Product[] = [
     12000
   ),
   product(
-    'frappe-baileys',
+    'frappe-especial',
     'regio',
     'frias',
-    'Frappé de Baileys',
-    'Frappé de café con licor Baileys, crema y hielo.',
-    14000,
-    true,
-    'Estrella de la casa'
+    'Frappé especial',
+    'Preparación fría de la casa; ingredientes, precio y disponibilidad por confirmar.'
   ),
   product(
     'orange-coffee',

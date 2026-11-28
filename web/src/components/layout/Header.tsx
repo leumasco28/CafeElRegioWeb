@@ -1,5 +1,7 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { site } from '../../content/site.ts';
+import { isChristmasSeason } from '../../content/christmas.ts';
 import { useCart } from '../../context/CartContext.tsx';
 import BrandLogo from '../ui/BrandLogo.tsx';
 import styles from './Header.module.css';
@@ -10,12 +12,14 @@ type NavLink = {
 };
 
 const NAV_LINKS: NavLink[] = [
-  { href: '#marcas', label: 'Marcas' },
-  { href: '#carta', label: 'Carta' },
-  { href: '#eventos', label: 'Eventos' },
-  { href: '#pedidos', label: 'Pedidos' },
-  { href: '#contacto', label: 'Contacto' },
+  { href: '/#marcas', label: 'Marcas' },
+  { href: '/#carta', label: 'Carta' },
+  { href: '/#eventos', label: 'Eventos' },
+  { href: '/#pedidos', label: 'Pedidos' },
+  { href: '/#contacto', label: 'Contacto' },
 ];
+
+const CHRISTMAS_LINK: NavLink = { href: '/#cajas-navidenas', label: 'Cajas navideñas' };
 
 type HeaderProps = {
   onToggleCart: () => void;
@@ -49,7 +53,7 @@ export default function Header({ onToggleCart }: HeaderProps) {
   return (
     <header className={styles.header}>
       <div className={`container ${styles.inner}`}>
-        <a href="#inicio" className={styles.brand} aria-label={`${site.name}, inicio`}>
+        <Link to="/#inicio" className={styles.brand} aria-label={`${site.name}, inicio`}>
           <span className={styles.logoBadge}>
             <BrandLogo brandId="regio" eager decorative className={styles.logo} />
           </span>
@@ -57,7 +61,7 @@ export default function Header({ onToggleCart }: HeaderProps) {
             <span className={styles.brandName}>{site.name}</span>
             <span className={styles.brandTag}>Café colombiano</span>
           </span>
-        </a>
+        </Link>
 
         <button
           type="button"
@@ -97,11 +101,11 @@ export default function Header({ onToggleCart }: HeaderProps) {
           aria-label="Navegación principal"
         >
           <ul className={styles.nav}>
-            {NAV_LINKS.map((link) => (
+            {[...NAV_LINKS, ...(isChristmasSeason() ? [CHRISTMAS_LINK] : [])].map((link) => (
               <li key={link.href}>
-                <a href={link.href} onClick={() => setMenuOpen(false)}>
+                <Link to={link.href} onClick={() => setMenuOpen(false)}>
                   {link.label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>

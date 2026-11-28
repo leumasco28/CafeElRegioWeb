@@ -353,36 +353,49 @@ La web **no cobra ni procesa pagos**: el pago se acuerda en el chat. Si la bande
 
 ## Editor visual propio (Puck a medida) con JSON local + localStorage
 
-En lugar de usar un CMS de terceros ni servicios en la nube, se construyó un **editor visual propio** sobre React + TypeScript que permite maquetar páginas, cambiar textos e imágenes y publicar sin tocar código.
+En lugar de usar un CMS de terceros ni servicios en la nube, el sitio tiene dos caminos de edición:
 
-### Motor de edición
+### 1. Editor visual Craft.js (propio, en `/editor/:slug`)
+
+Construido sobre React + TypeScript que permite maquetar páginas, cambiar textos e imágenes y publicar sin tocar código.
 
 - **Craft.js**: arrastre y soltar, anidamiento de componentes y selección sobre un árbol de nodos JSON.
 - **Zustand**: estado del árbol, historial undo/redo y paneles de propiedades (Contenido / Estilo / Avanzado).
 - **Tailwind CSS**: controles visuales de estilo (colores, padding, márgenes, flex/grid).
 
-### Almacenamiento: JSON local + localStorage
-
-Se eligió **JSON local + localStorage** porque no requiere servidor, no tiene dependencias externas y funciona inmediatamente. El editor lee `src/content/pages.json` y persiste cambios en `localStorage` del navegador. En producción con backend, `pagesClient.ts` se reemplaza por un fetch a la API sin tocar el editor.
+El editor lee `src/content/pages.json` y persiste cambios en `localStorage` del navegador. En producción con backend, `pagesClient.ts` se reemplaza por un fetch a la API sin tocar el editor.
 
 Estructura del JSON:
 
 - **pages**: arreglo con `id`, `slug` (único), `title`, `status` (`draft` / `published`), `theme` (JSON), `createdAt`, `updatedAt`, `root` (árbol de nodos).
 - **Nodos**: `id`, `type`, `parentId` (opcional), `props` (JSON), `styles` (JSON por breakpoint), `order` (número).
 
+### 2. Editor visual Puck (`@puckeditor/core`, en `/edit`)
+
+Ruta dedicada al editor visual de **Puck Labs** (`@puckeditor/core@0.24.2`, compatible con React 19).
+
+- **`src/puck.config.tsx`** — configuración compartida (`config` y `initialData`) con bloques registrados: `HeadingBlock`, `TextBlock`, `ImageBlock`, `ButtonBlock`.
+- **`src/pages/EditPage.tsx`** — renderiza `<Puck config={config} data={...} onChange={...} onPublish={...} />`. Al publicar, el JSON se guarda en `localStorage` bajo la clave `'puck-data'`. Siempre recibe un objeto de datos válido `{ content: [], root: {} }` (nunca `null` ni `undefined`).
+- **`src/main.tsx`** — importa `@puckeditor/core/puck.css`. `<StrictMode>` se removió temporalmente de la raíz para probar si React 19 StrictMode provoca el crash `<ForwardRef(Layer2)>`.
+- **`src/App.tsx`** — la ruta `/` lee `'puck-data'` de `localStorage`; si existe, lo renderiza con `<Render config={config} data={data} />`, si no, muestra el home normal. La ruta `/edit` renderiza `<EditPage />`.
+
 ### Estructura de carpetas (en src/)
 
 ```
 src/
-  editor/            # Editor visual (solo en /admin)
+  editor/            # Editor visual Craft.js (solo en /admin)
     canvas.tsx       # Lienzo con Craft.js, selección, edición inline
     panels/          # Contenido, Estilo, Avanzado
     store/           # Zustand: árbol JSON, historial undo/redo
-  renderer/          # Renderizador ligero (solo lee JSON y dibuja)
+  renderer/          # Renderizador ligero Craft.js (solo lee JSON y dibuja)
     PageRenderer.tsx
     components/      # Section, Row, Column, Text, Image, Button
     blocks/          # Hero, Catalog, EventForm, Navbar
     resolveComponent.tsx  # Mapea tipo JSON -> componente React
+  puck.config.tsx    # Config y datos iniciales del editor Puck
+  pages/
+    EditPage.tsx     # Ruta /edit con <Puck>
+    PuckDemoPage.tsx # Ruta /puck-demo con <Puck>
   types/             # page.ts, component.ts, breakpoint.ts, theme.ts
   lib/               # pagesClient.ts
 ```
@@ -424,9 +437,11 @@ Pendiente:
 
 ## Routing y editor visual
 
-El frontend usa `react-router-dom` con dos rutas definidas en `src/App.tsx`:
+El frontend usa `react-router-dom` con las rutas definidas en `src/App.tsx`:
 
-- **`/`** — sitio estático público (Hero, BrandSplit, CatalogPreview, Events, HowToOrder).
+- **`/`** — sitio estático público (Hero, BrandSplit, CatalogPreview, Events, HowToOrder). Si hay datos publicados en `localStorage` (clave `'puck-data'`), los renderiza con `<Render>` de Puck; si no, muestra el home normal.
+- **`/edit`** — editor visual Puck (`<Puck>` de `@puckeditor/core`). Publicar guarda el JSON en `localStorage` bajo `'puck-data'`. Intencionalmente sin `<StrictMode>` para probar el crash `<ForwardRef(Layer2)>` de React 19.
 - **`/editor/:slug`** — editor visual propio (Canvas con Craft.js + drag-and-drop) que carga y guarda páginas desde JSON local. Ejemplo: `http://localhost:5173/editor/inicio`.
+- **`/puck-demo`** — demostración adicional del editor Puck.
 
-Para entrar al editor de una página específica, navega a `/editor/<slug>` (por ejemplo `/editor/inicio`).
+Para entrar al editor de una página específica, navega a `/editor/<slug>` (por ejemplo `/editor/inicio`). Para usar el editor Puck, abre `http://localhost:5173/edit`.

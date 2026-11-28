@@ -19,6 +19,7 @@
   width: min(480px, 92vw);
   max-height: 90vh;
   overflow-y: auto;
+  overscroll-behavior: contain;
   background: var(--color-paper);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-lg);
@@ -111,10 +112,11 @@
     box-shadow var(--transition);
 }
 
-.field input:focus,
-.field select:focus,
-.field textarea:focus {
-  outline: none;
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
   border-color: var(--color-tiza);
   box-shadow: 0 0 0 3px rgba(233, 185, 73, 0.2);
 }
@@ -136,17 +138,32 @@
   margin-top: 0.15rem;
 }
 
-.privacy {
-  display: flex;
-  align-items: flex-start;
+.consentGroup {
+  display: grid;
   gap: var(--space-sm);
-  margin-top: var(--space-xs);
 }
 
-.privacyText {
+.consent {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-xs);
   color: var(--color-muted);
-  font-size: var(--text-2xs);
+  font-size: var(--text-xs);
   line-height: 1.55;
+  cursor: pointer;
+}
+
+.consent input {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.15rem;
+  flex: 0 0 auto;
+}
+
+.consent a {
+  color: var(--color-coffee);
+  font-weight: 700;
+  text-underline-offset: 2px;
 }
 
 .actions {
@@ -241,7 +258,7 @@
 
   .panel {
     width: 100%;
-    max-height: none;
+    max-height: calc(100dvh - var(--space-xl) * 2);
     padding: var(--space-lg);
   }
 }

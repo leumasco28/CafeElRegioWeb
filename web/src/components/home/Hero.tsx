@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { PointerEvent, KeyboardEvent } from 'react';
 import { site } from '../../content/site.ts';
 import { isChristmasSeason } from '../../content/christmas.ts';
+import { AI_CONTENT_NOTICE } from '../../content/legal.ts';
 import BrandChannels from '../ui/BrandChannels.tsx';
 import BrandLogo from '../ui/BrandLogo.tsx';
 import ChannelIcon from '../ui/ChannelIcon.tsx';
@@ -337,6 +338,7 @@ export default function Hero() {
                       : 'catálogo y precios en preparación'}
                     .
                   </p>
+                  <p className={styles.notice}>{AI_CONTENT_NOTICE}</p>
                 </div>
               </div>
 

@@ -46,7 +46,7 @@ export const brands: Brand[] = [
     name: 'Café El Regio',
     shortName: 'El Regio',
     kind: 'Café colombiano',
-    claim: 'Café premium · Excelso',
+    claim: 'Café colombiano · Preparación artesanal',
     summary:
       'Café colombiano servido con carácter: bebidas calientes y frías, métodos manuales y una barra que se monta donde la necesites.',
     description:

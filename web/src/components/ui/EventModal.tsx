@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import type { ChangeEvent, FormEvent, KeyboardEvent } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import type { ChangeEvent, FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { EVENT_TYPE_OPTIONS, EVENT_TYPE_OTRO } from '../../content/eventTypes.ts';
+import { recordTermsAcceptance, type AcceptanceRecord } from '../../lib/acceptance.ts';
 import styles from './EventModal.module.css';
 
 type FormData = {
@@ -11,146 +13,149 @@ type FormData = {
   eventDate: string;
   attendees: string;
   message: string;
-  privacy: boolean;
+  terms: boolean;
+  marketing: boolean;
 };
 
+export type EventSubmission = Omit<FormData, 'terms' | 'marketing'>;
 type ValidationErrors = Partial<Record<keyof FormData, string>>;
-
-type SubmitStatus = 'ready' | 'error' | null;
 
 type EventModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (formData: Omit<FormData, 'privacy'>) => void;
+  onSubmit: (formData: EventSubmission, acceptance: AcceptanceRecord) => void;
+};
+
+const EMPTY_FORM: FormData = {
+  name: '',
+  phone: '',
+  email: '',
+  eventType: '',
+  eventDate: '',
+  attendees: '',
+  message: '',
+  terms: false,
+  marketing: false,
 };
 
 function validate(formData: FormData): ValidationErrors {
   const errors: ValidationErrors = {};
   const name = formData.name.trim();
-  if (!name) {
-    errors.name = 'El nombre completo es obligatorio.';
-  } else if (name.length < 2) {
-    errors.name = 'El nombre es muy corto.';
-  }
+  if (!name) errors.name = 'El nombre completo es obligatorio.';
+  else if (name.length < 2) errors.name = 'El nombre es muy corto.';
 
   const phone = formData.phone.trim();
-  if (!phone) {
-    errors.phone = 'El WhatsApp o teléfono es obligatorio.';
-  } else {
-    const digits = phone.replace(/\D/g, '');
-    if (digits.length < 7) {
-      errors.phone = 'El número de teléfono está incompleto.';
-    }
+  if (!phone) errors.phone = 'El WhatsApp o teléfono es obligatorio.';
+  else if (phone.replace(/\D/g, '').length < 7) {
+    errors.phone = 'El número de teléfono está incompleto.';
   }
 
   if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
     errors.email = 'El correo electrónico no es válido.';
   }
-
-  if (!formData.eventType) {
-    errors.eventType = 'Selecciona el tipo de evento.';
+  if (formData.marketing && !formData.email.trim()) {
+    errors.email = 'Indica el correo al que autorizas enviar marketing.';
   }
-
-  if (!formData.privacy) {
-    errors.privacy = 'Debes aceptar el tratamiento de datos personales.';
-  }
-
+  if (!formData.eventType) errors.eventType = 'Selecciona el tipo de evento.';
+  if (!formData.terms) errors.terms = 'Debes aceptar los términos y la política de privacidad.';
   return errors;
 }
 
 export default function EventModal({ isOpen, onClose, onSubmit }: EventModalProps) {
-  const [formData, setFormData] = useState<FormData>({
-    name: '',
-    phone: '',
-    email: '',
-    eventType: '',
-    eventDate: '',
-    attendees: '',
-    message: '',
-    privacy: false,
-  });
+  const [formData, setFormData] = useState<FormData>(EMPTY_FORM);
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [submitting, setSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<SubmitStatus>(null);
   const [submitMessage, setSubmitMessage] = useState('');
-
-  const modalRef = useRef<HTMLDivElement | null>(null);
+  const overlayRef = useRef<HTMLDivElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
   const firstFocusableRef = useRef<HTMLInputElement | null>(null);
-  const lastFocusableRef = useRef<HTMLButtonElement | null>(null);
-
-  const closeModal = useCallback(() => {
-    onClose();
-  }, [onClose]);
-
-  // Cerrar con Escape
+  const submittingRef = useRef(submitting);
   useEffect(() => {
-    if (!isOpen) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') closeModal();
-    };
-    document.addEventListener('keydown', onKeyDown as unknown as EventListener);
-    return () => document.removeEventListener('keydown', onKeyDown as unknown as EventListener);
-  }, [isOpen, closeModal]);
+    submittingRef.current = submitting;
+  }, [submitting]);
 
-  // Capturar foco al abrir y evitar clics fuera
   useEffect(() => {
-    if (!isOpen) return;
-    const overlay = modalRef.current;
-    if (!overlay) return undefined;
-    const onClick = (event: MouseEvent) => {
-      if (event.target === overlay) closeModal();
-    };
-    overlay.addEventListener('click', onClick);
-    if (firstFocusableRef.current) firstFocusableRef.current.focus();
-    return () => overlay.removeEventListener('click', onClick);
-  }, [isOpen, closeModal]);
+    if (!isOpen) return undefined;
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    firstFocusableRef.current?.focus();
 
-  const handleChange = (key: keyof FormData) => (event: ChangeEvent<HTMLInputElement>) => {
-    const target = event.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
-    setFormData((prev) => ({ ...prev, [key]: target.value }));
-    if (errors[key]) {
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key === 'Escape' && !submittingRef.current) {
+        onClose();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const focusable = panelRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]'
+      );
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = previousOverflow;
+      previousFocus?.focus();
+    };
+  }, [isOpen, onClose]);
+
+  const handleChange =
+    (key: keyof FormData) =>
+    (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+      const target = event.target;
+      const value =
+        target instanceof HTMLInputElement && target.type === 'checkbox'
+          ? target.checked
+          : target.value;
+      setFormData((prev) => ({ ...prev, [key]: value }));
       setErrors((prev) => {
+        if (!prev[key]) return prev;
         const next = { ...prev };
         delete next[key];
         return next;
       });
-    }
-  };
+    };
 
-  const handlePrivacyChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, privacy: event.target.checked }));
-    if (errors.privacy) {
-      setErrors((prev) => {
-        const next = { ...prev };
-        delete next.privacy;
-        return next;
-      });
-    }
-  };
-
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     const validationErrors = validate(formData);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
+      window.requestAnimationFrame(() => {
+        panelRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+      });
       return;
     }
+
     setErrors({});
     setSubmitting(true);
-    setSubmitStatus(null);
     setSubmitMessage('');
-
-    // Simular red para mostrar estado de carga mientras no hay backend
-    setTimeout(() => {
-      setSubmitting(false);
-      setSubmitStatus('ready');
+    try {
+      const acceptance = await recordTermsAcceptance({
+        context: 'evento',
+        name: formData.name,
+        contact: formData.email.trim() || formData.phone,
+        marketingAccepted: formData.marketing,
+      });
+      const { terms: _terms, marketing: _marketing, ...submission } = formData;
+      onSubmit(submission, acceptance);
+    } catch {
       setSubmitMessage(
-        'Tu solicitud está lista para enviarse. Actualmente no hay un servicio de backend configurado para recibir estos datos. Mientras tanto, puedes escribirnos directamente por WhatsApp al 301 515 0059.'
+        'No pudimos registrar tu aceptación. Revisa la conexión e inténtalo de nuevo; no se abrió WhatsApp.'
       );
-    }, 800);
-
-    const { privacy, ...dataWithoutPrivacy } = formData;
-    onSubmit(dataWithoutPrivacy);
+      setSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -158,39 +163,53 @@ export default function EventModal({ isOpen, onClose, onSubmit }: EventModalProp
   return (
     <div
       className={styles.overlay}
-      ref={modalRef}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="event-modal-title"
-      onKeyDown={(event: KeyboardEvent) => {
-        if (event.key === 'Escape') closeModal();
+      ref={overlayRef}
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget && !submitting) onClose();
       }}
     >
-      <div className={styles.panel}>
-        <button className={styles.close} onClick={closeModal} aria-label="Cerrar formulario">
-          ✕
+      <div
+        className={styles.panel}
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="event-modal-title"
+        aria-describedby="event-modal-description"
+      >
+        <button
+          type="button"
+          className={styles.close}
+          onClick={onClose}
+          aria-label="Cerrar formulario"
+          disabled={submitting}
+        >
+          ×
         </button>
-
         <h2 id="event-modal-title" className={styles.title}>
           Hablemos de tu evento
         </h2>
-        <p className={styles.subtitle}>
-          Cuéntanos qué necesitas y nos pondremos en contacto contigo por WhatsApp.
+        <p id="event-modal-description" className={styles.subtitle}>
+          Cuéntanos lo necesario para coordinar tu solicitud por WhatsApp. Si participan menores, no
+          incluyas sus datos: un padre, madre o tutor debe continuar la conversación.
         </p>
 
-        <form onSubmit={handleSubmit} className={styles.form} data-testid="event-form">
+        <form onSubmit={handleSubmit} className={styles.form} data-testid="event-form" noValidate>
           <div className={styles.field}>
             <label htmlFor="event-name">
               Nombre completo <span className={styles.required}>*</span>
             </label>
             <input
               id="event-name"
+              name="name"
               type="text"
+              autoComplete="name"
               ref={firstFocusableRef}
               value={formData.name}
               onChange={handleChange('name')}
               aria-invalid={!!errors.name}
-              aria-describedby="error-name"
+              aria-describedby={errors.name ? 'error-name' : undefined}
+              required
             />
             {errors.name && (
               <span id="error-name" className={styles.errorText}>
@@ -205,11 +224,15 @@ export default function EventModal({ isOpen, onClose, onSubmit }: EventModalProp
             </label>
             <input
               id="event-phone"
+              name="phone"
               type="tel"
+              inputMode="tel"
+              autoComplete="tel"
               value={formData.phone}
               onChange={handleChange('phone')}
               aria-invalid={!!errors.phone}
-              aria-describedby="error-phone"
+              aria-describedby={errors.phone ? 'error-phone' : undefined}
+              required
             />
             {errors.phone && (
               <span id="error-phone" className={styles.errorText}>
@@ -219,14 +242,18 @@ export default function EventModal({ isOpen, onClose, onSubmit }: EventModalProp
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="event-email">Correo electrónico</label>
+            <label htmlFor="event-email">Correo electrónico (opcional)</label>
             <input
               id="event-email"
+              name="email"
               type="email"
+              inputMode="email"
+              autoComplete="email"
+              spellCheck={false}
               value={formData.email}
               onChange={handleChange('email')}
               aria-invalid={!!errors.email}
-              aria-describedby="error-email"
+              aria-describedby={errors.email ? 'error-email' : undefined}
             />
             {errors.email && (
               <span id="error-email" className={styles.errorText}>
@@ -241,12 +268,12 @@ export default function EventModal({ isOpen, onClose, onSubmit }: EventModalProp
             </label>
             <select
               id="event-type"
+              name="eventType"
               value={formData.eventType}
-              onChange={(event) =>
-                handleChange('eventType')(event as unknown as ChangeEvent<HTMLInputElement>)
-              }
+              onChange={handleChange('eventType')}
               aria-invalid={!!errors.eventType}
-              aria-describedby="error-event-type"
+              aria-describedby={errors.eventType ? 'error-event-type' : undefined}
+              required
             >
               <option value="">Selecciona una opción</option>
               {[...EVENT_TYPE_OPTIONS, EVENT_TYPE_OTRO].map((item) => (
@@ -263,9 +290,10 @@ export default function EventModal({ isOpen, onClose, onSubmit }: EventModalProp
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="event-date">Fecha estimada del evento</label>
+            <label htmlFor="event-date">Fecha estimada del evento (opcional)</label>
             <input
               id="event-date"
+              name="eventDate"
               type="date"
               value={formData.eventDate}
               onChange={handleChange('eventDate')}
@@ -273,10 +301,12 @@ export default function EventModal({ isOpen, onClose, onSubmit }: EventModalProp
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="event-attendees">Número aproximado de asistentes</label>
+            <label htmlFor="event-attendees">Número aproximado de asistentes (opcional)</label>
             <input
               id="event-attendees"
+              name="attendees"
               type="number"
+              inputMode="numeric"
               min="1"
               value={formData.attendees}
               onChange={handleChange('attendees')}
@@ -284,55 +314,79 @@ export default function EventModal({ isOpen, onClose, onSubmit }: EventModalProp
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="event-message">Mensaje o comentarios adicionales</label>
+            <label htmlFor="event-message">Mensaje o comentarios adicionales (opcional)</label>
             <textarea
               id="event-message"
+              name="message"
               rows={3}
               value={formData.message}
-              onChange={(event) =>
-                handleChange('message')(event as unknown as ChangeEvent<HTMLInputElement>)
-              }
+              onChange={handleChange('message')}
             />
           </div>
 
-          <div className={styles.privacy}>
-            <input
-              id="event-privacy"
-              type="checkbox"
-              checked={formData.privacy}
-              onChange={handlePrivacyChange}
-              aria-required="true"
-              required
-            />
-            <label htmlFor="event-privacy" className={styles.privacyText}>
-              Al enviar este formulario aceptas que tus datos personales (nombre, teléfono, correo y
-              detalles del evento) se utilicen únicamente para contactarte y coordinar tu solicitud
-              de evento. No compartiremos tu información con terceros. Puedes escribirnos para
-              ejercer tus derechos de consulta, corrección o supresión de datos.
+          <div className={styles.consentGroup}>
+            <label className={styles.consent} htmlFor="event-terms">
+              <input
+                id="event-terms"
+                name="terms"
+                type="checkbox"
+                checked={formData.terms}
+                onChange={handleChange('terms')}
+                aria-invalid={!!errors.terms}
+                aria-describedby={errors.terms ? 'error-terms' : undefined}
+                required
+              />
+              <span>
+                Acepto los{' '}
+                <Link to="/terminos" target="_blank">
+                  términos y condiciones
+                </Link>{' '}
+                y la{' '}
+                <Link to="/privacidad" target="_blank">
+                  política de privacidad
+                </Link>
+                . Autorizo el uso de estos datos para gestionar el evento y su registro de
+                aceptación.
+              </span>
             </label>
-            {errors.privacy && <span className={styles.errorText}>{errors.privacy}</span>}
+            {errors.terms && (
+              <span id="error-terms" className={styles.errorText}>
+                {errors.terms}
+              </span>
+            )}
+
+            <label className={styles.consent} htmlFor="event-marketing">
+              <input
+                id="event-marketing"
+                name="marketing"
+                type="checkbox"
+                checked={formData.marketing}
+                onChange={handleChange('marketing')}
+              />
+              <span>
+                <strong>Opcional:</strong> autorizo correos de marketing al correo indicado. Sé que
+                puedo{' '}
+                <Link to="/baja" target="_blank">
+                  darme de baja
+                </Link>{' '}
+                en cualquier momento.
+              </span>
+            </label>
           </div>
 
           <div className={styles.actions}>
-            <button
-              type="button"
-              className={styles.cancel}
-              onClick={closeModal}
-              ref={lastFocusableRef}
-            >
+            <button type="button" className={styles.cancel} onClick={onClose} disabled={submitting}>
               Cancelar
             </button>
             <button type="submit" className={styles.submit} disabled={submitting}>
-              {submitting ? 'Enviando...' : 'Enviar solicitud'}
+              {submitting ? 'Registrando aceptación…' : 'Continuar a WhatsApp'}
             </button>
           </div>
-
-          {submitStatus === 'ready' && (
-            <div className={`${styles.status} ${styles.statusReady}`}>
-              <span className={styles.statusIcon}>⚠</span>
-              <span>{submitMessage}</span>
-            </div>
-          )}
+          <div aria-live="polite">
+            {submitMessage && (
+              <p className={`${styles.status} ${styles.statusReady}`}>{submitMessage}</p>
+            )}
+          </div>
         </form>
       </div>
     </div>
